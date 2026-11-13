@@ -1,0 +1,10 @@
+{
+  "name": "English Trainer – Mia",
+  "short_name": "English Trainer",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f7fc",
+  "theme_color": "#2f6fed"
+}

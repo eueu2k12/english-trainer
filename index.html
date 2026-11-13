@@ -1,0 +1,1288 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="English Trainer">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2f6fed">
+<title>English Trainer – Mia</title>
+<style>
+:root{--bg:#f4f7fc;--card:#fff;--tx:#1d2433;--mu:#5d6882;--pr:#2f6fed;--ok:#1f9d55;--bad:#d64545;--bd:#dfe5f1;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141d;--card:#1a2030;--tx:#eef1f8;--mu:#9aa6c2;--pr:#6b9bff;--ok:#43c47c;--bad:#ff7a7a;--bd:#2b3348;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10141d;--card:#1a2030;--tx:#eef1f8;--mu:#9aa6c2;--pr:#6b9bff;--ok:#43c47c;--bad:#ff7a7a;--bd:#2b3348;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:18px/1.45 -apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+main{max-width:760px;margin:0 auto;padding:16px}
+nav{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--mu);padding:8px 12px;border-radius:999px;border:1px solid var(--bd);background:var(--card);font-size:15px}
+nav a.on{background:var(--pr);color:#fff;border-color:var(--pr)}
+h1{font-size:28px;margin:8px 0}h2{font-size:22px;margin:16px 0 8px}
+.mu{color:var(--mu)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin:12px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{display:block;text-decoration:none;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:20px 12px;text-align:center;font-weight:600}
+.tile span{display:block;font-size:34px}
+button,.btn{font:inherit;min-height:48px;padding:10px 18px;border-radius:12px;border:1px solid var(--bd);background:var(--card);color:var(--tx);cursor:pointer;text-decoration:none;display:inline-block;margin:4px 4px 4px 0}
+button.p,.btn.p{background:var(--pr);color:#fff;border-color:var(--pr)}
+button.on{border-color:var(--pr);color:var(--pr);font-weight:600}
+.opt{display:block;width:100%;text-align:left;margin:8px 0}
+.opt.ok{background:var(--ok);color:#fff;border-color:var(--ok)}
+.opt.bad{background:var(--bad);color:#fff;border-color:var(--bad)}
+input,select,textarea{font:inherit;width:100%;min-height:48px;padding:10px;border-radius:12px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);margin:4px 0}
+textarea{min-height:110px}
+.big{font-size:32px;font-weight:700;margin:8px 0}
+.bar{height:10px;background:var(--bd);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ok)}
+.good{color:var(--ok);font-weight:600}.badc{color:var(--bad);font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--bd)}
+.dig{display:inline-block;font:700 44px/1 ui-monospace,Menlo,Consolas,monospace;background:#1b2233;color:#7dffb0;padding:12px 20px;border-radius:12px;letter-spacing:2px;margin:6px 0}.dig.s{font-size:26px;padding:6px 14px}
+.sub{margin:0 0 4px 34px;display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.txt{background:var(--bg);border-left:4px solid var(--pr);padding:10px 12px;border-radius:8px;font-size:16px;line-height:1.5;margin-bottom:12px}
+.chk{display:flex;align-items:center;gap:12px;min-height:48px;border-bottom:1px solid var(--bd)}.chk input{width:26px;height:26px;min-height:0;margin:0;flex:none}.chk span:first-of-type{flex:1}
+@media (max-width:420px){.grid{gap:8px}body{font-size:17px}}
+</style>
+</head>
+<body>
+<main>
+<nav id="nav"></nav>
+<div id="app"></div>
+</main>
+<script>
+const SEED="hello=hallo;friend=Freund/Freundin;school=Schule;teacher=Lehrer/Lehrerin;family=Familie;mother=Mutter;father=Vater;brother=Bruder;sister=Schwester;dog=Hund;cat=Katze;house=Haus;room=Zimmer;book=Buch;pen=Stift;bag=Tasche;apple=Apfel;breakfast=Frühstück;play=spielen;like=mögen;name=Name;old=alt;happy=glücklich;big=groß;small=klein;red=rot;blue=blau;green=grün;Monday=Montag;birthday=Geburtstag";
+const SEED2="pencil=Bleistift=Schule;ruler=Lineal=Schule;rubber=Radiergummi=Schule;desk=Schreibtisch/Pult=Schule;chair=Stuhl=Schule;board=Tafel=Schule;classroom=Klassenzimmer=Schule;homework=Hausaufgaben=Schule;lesson=Unterrichtsstunde/Stunde=Schule;subject=Fach=Schule;English=Englisch=Schule;maths=Mathe=Schule;art=Kunst=Schule;music=Musik=Schule;bread=Brot=Essen;milk=Milch=Essen;cheese=Käse=Essen;egg=Ei=Essen;water=Wasser=Essen;juice=Saft=Essen;banana=Banane=Essen;orange=Orange=Essen;pizza=Pizza=Essen;chocolate=Schokolade=Essen;sandwich=Sandwich/belegtes Brot=Essen;cake=Kuchen=Essen;lunch=Mittagessen=Essen;dinner=Abendessen=Essen;hungry=hungrig=Essen;thirsty=durstig=Essen;horse=Pferd=Tiere;rabbit=Hase/Kaninchen=Tiere;mouse=Maus=Tiere;bird=Vogel=Tiere;fish=Fisch=Tiere;hamster=Hamster=Tiere;pet=Haustier=Tiere;animal=Tier=Tiere;grandma=Oma=Familie;grandpa=Opa=Familie;parents=Eltern=Familie;uncle=Onkel=Familie;aunt=Tante=Familie;cousin=Cousin/Cousine=Familie;baby=Baby=Familie;boy=Junge=Familie;girl=Mädchen=Familie;garden=Garten=Zuhause;kitchen=Küche=Zuhause;bedroom=Schlafzimmer=Zuhause;bathroom=Badezimmer=Zuhause;door=Tür=Zuhause;window=Fenster=Zuhause;bike=Fahrrad=Zuhause;ball=Ball=Zuhause;computer=Computer=Zuhause;phone=Handy/Telefon=Zuhause;morning=Morgen=Tag;afternoon=Nachmittag=Tag;evening=Abend=Tag;night=Nacht=Tag;today=heute=Tag;tomorrow=morgen=Tag;go=gehen=Verben;come=kommen=Verben;eat=essen=Verben;drink=trinken=Verben;read=lesen=Verben;write=schreiben=Verben;listen=zuhören=Verben;speak=sprechen=Verben;swim=schwimmen=Verben;help=helfen=Verben;live=wohnen/leben=Verben;watch=anschauen/ansehen=Verben;ask=fragen=Verben;answer=antworten=Verben;sing=singen=Verben;dance=tanzen=Verben;run=rennen/laufen=Verben;yellow=gelb=Adjektive;black=schwarz=Adjektive;white=weiß=Adjektive;nice=nett/schön=Adjektive;funny=lustig=Adjektive;tired=müde=Adjektive;new=neu=Adjektive;good=gut=Adjektive;bad=schlecht=Adjektive;fast=schnell=Adjektive;cold=kalt=Adjektive;hot=heiß=Adjektive";
+const SEED3="My name is Alice.=Ich heiße Alice.;I'm from Brighton.=Ich bin aus Brighton.;I'm eleven years old.=Ich bin elf Jahre alt.;city=die Stadt/die Großstadt;too=auch;by the sea=am Meer;the=der/die/das;sea=das Meer;boy=der Junge;girl=das Mädchen;beach=der Strand;sand=der Sand;seagull=die Möwe;sky=der Himmel;stone=der Stein;see=sehen/besuchen;like=mögen;picture=das Bild;think=denken/glauben/meinen;nice=nett/schön;one=eins;two=zwei;three=drei;four=vier;five=fünf;six=sechs;seven=sieben;eight=acht;nine=neun;ten=zehn;eleven=elf;twelve=zwölf;thirteen=dreizehn;fourteen=vierzehn;fifteen=fünfzehn;sixteen=sechzehn;seventeen=siebzehn;eighteen=achtzehn;nineteen=neunzehn;twenty=zwanzig;thirty=dreißig;forty=vierzig;fifty=fünfzig;sixty=sechzig;seventy=siebzig;eighty=achtzig;ninety=neunzig;one hundred=hundert;zero=Null;cool=cool;big=groß;small=klein;great=großartig;hot=heiß;cold=kalt;Nice to meet you.=Freut mich, dich/euch/Sie kennenzulernen.;How old are you?=Wie alt bist du?;Where are you from?=Woher kommst du?;where=wo/woher/wohin;Hello=Hallo/Guten Tag;today=heute;How are you?=Wie geht's?;I'm fine, thanks.=Gut, danke.;town=die Stadt;hometown=die Heimatstadt;live=wohnen/leben;can=können;fly=fliegen;Germany=Deutschland;Bye=Tschüs/Auf Wiedersehen;garden=der Garten;palace=der Palast/das Schloss;park=der Park;game=das Spiel;bag=die Tasche/der Beutel/die Tüte;ball=der Ball;balloon=der Luftballon;bee=die Biene;bike=das Fahrrad;dog=der Hund;grass=das Gras/der Rasen;flower=die Blume/die Blüte;sandwich=das Sandwich/belegtes Brot;tree=der Baum;something=etwas;blue=blau;now=nun/jetzt;your=dein/e/euer/eure/Ihr/e;spell=buchstabieren;spelling=die Rechtschreibung;colour=die Farbe;red=rot;yellow=gelb;green=grün;brown=braun;orange=orange;grey=grau;pink=pink/rosa;purple=violett/lila;white=weiß;black=schwarz;find=finden;banana=die Banane;have=haben;wrong=falsch/verkehrt;school=die Schule;new=neu;old=alt;at=an/bei/in;year=das Jahr/der Jahrgang;please=bitte;uniform=die (Schul-)Uniform;awesome=großartig;class=die (Schul-)Klasse;me=mich/mir;show=zeigen;our=unser/e;classroom=das Klassenzimmer;we=wir;family=die Familie;us=uns;blazer=der Blazer/die Sportjacke;tie=der Schlips/die Krawatte;thing=die Sache/das Ding;know=wissen/kennen;Thanks=Danke;with=mit/bei;dot=der Punkt/das Pünktchen;double=Doppel-;sit=sitzen/sich setzen;together=zusammen;Mr Lee=Herr Lee;Mrs Lee=Frau Lee;teach=unterrichten;art=die Kunst;history=die Geschichte;class teacher=Klassenlehrer/Klassenlehrerin;poem=das Gedicht;day=der Tag;Monday=Montag;Tuesday=Dienstag;Wednesday=Mittwoch;Thursday=Donnerstag;Friday=Freitag;Saturday=Samstag/Sonnabend;Sunday=Sonntag;book=das Buch/das Heft;song=das Lied/der Song;go=gehen;speak=sprechen;French=Französisch;read=lesen;watch=anschauen/ansehen;but=aber;I don't have ...=Ich habe kein/keine/keinen ...;board=die (Wand-)Tafel;chair=der Stuhl;desk=der Schreibtisch;exercise book=das Schulheft/das Übungsheft;pencil case=das Federmäppchen;pencil=der Bleistift;schoolbag=die Schultasche;student=Schüler/in/Student/in;marker=der Textmarker;pen=der Kugelschreiber/der Stift/der Füller;rubber=der/das Radiergummi;ruler=das Lineal;sharpener=der Anspitzer;no=kein/keine;problem=das Problem;Here you are.=Hier, bitte.;says=sagt;world=die Welt;glue stick=der Klebestift;pet=das Haustier;cute=niedlich/süß;scary=unheimlich/gruselig;boring=langweilig;budgie=der Wellensittich;cat=die Katze;fish=der Fisch;guinea pig=das Meerschweinchen;parrot=der Papagei;rabbit=das Kaninchen;rat=die Ratte;snake=die Schlange;spider=die Spinne;hamster=der Hamster;under=unter;I don't like ...=Ich mag ... nicht.;more=mehr;animal=das Tier;hobby=das Hobby;football=der Fußball;run=rennen/laufen;music=die Musik;swim=schwimmen;dance=tanzen;what=was;What about you?=Und du?/Und was ist mit dir?;if=wenn/falls;need=brauchen/benötigen;at home=daheim/zu Hause;everyone=jeder/alle;This is ...=Dies ist .../Das ist ...;street=die Straße;It's called ...=Er/Sie/Es heißt ...;road=die Straße;car=das Auto;house=das Haus;a lot of=viel/viele;lots of=viel/viele;postman=der Briefträger/der Postbote;morning=der Morgen/der Vormittag;doorbell=die Türklingel/die Türglocke;bell=die Klingel/die Glocke;maybe=vielleicht;dad=der Papa/der Vati;mum=die Mama/die Mutti;come=kommen;so=also/deshalb/daher;you're=du bist;upstairs=oben/nach oben;downstairs=unten/nach unten;room=das Zimmer/der Raum;why=warum;an hour=eine Stunde;for=für;here=hier/hierher;Sorry=Verzeihung/Entschuldigung;who=wer;brother=der Bruder;sister=die Schwester;Yes, I am.=Ja, das bin ich.;See you.=Bis gleich/Bis bald.;You're lucky.=Du hast Glück.;sure=sicher;smile=das Lächeln;sometimes=manchmal;weird=seltsam/komisch;at school=in der Schule;they're=sie sind;divorced=geschieden;parents=die Eltern;listen=zuhören/horchen;phone=das (Mobil-)Telefon/das Handy;message=die Nachricht/die SMS;free=frei;hang out=hängen/abhängen/rumhängen;at my place=bei mir;place=der Ort/der Platz/die Stelle;primary school=die Grundschule;again=wieder/noch einmal;Good morning=Guten Morgen;parcel=das Paket/das Päckchen;very=sehr;understand=verstehen;father=der Vater;mother=die Mutter;useful=nützlich;phrase=der Satz/der Ausdruck/die Redewendung;grandma=die Oma/die Großmutter;grandpa=der Opa/der Großvater;aunt=die Tante;uncle=der Onkel;cousin=der Cousin/die Cousine;some=einige/ein paar/etwas;English=Englisch/englisch;word=das Wort;other=andere(r/s);language=die Sprache;e.g.=z.B. (zum Beispiel);help=helfen/die Hilfe;when=wenn;learn=lernen;people=Leute/Menschen;umbrella=der Schirm/der Regenschirm;type=tippen;pronounce=aussprechen;then=dann;hear=hören;say=sagen;question=die Frage;answer=die Antwort;favourite=Lieblings-;use=benutzen/verwenden;or=oder;before=vor;letter=der Buchstabe/der Brief;careful=vorsichtig;conversation=das Gespräch/die Unterhaltung;There are ...=Es sind .../Es gibt ...;There's ...=Es ist .../Es gibt ...;its=sein(e)/ihr(e);full stop=der Punkt;in English=auf Englisch;in German=auf Deutsch;sentence=der Satz;country=das Land/der Staat;missing=fehlend;order=die Reihenfolge;step=der Schritt;draw=zeichnen;write=schreiben;this=dieses/diese/dieser;look at=anschauen/ansehen;look up=nachschlagen;check=(über)prüfen/kontrollieren;get=besorgen/holen;drink=das Getränk/trinken;any=irgendwelche;glass=das Glas;kitchen=die Küche;be fun=Spaß machen;have fun=Spaß haben/sich amüsieren;bedroom=das Schlafzimmer;quiet=ruhig/still/leise;tidy=ordentlich;clothes=die Kleidung/die Kleidungsstücke;bin=der Abfalleimer;behind=hinter;in front of=vor;door=die Tür;TV=der Fernseher/das Fernsehgerät;watch TV=fernsehen;guys=Leute;photo=das Foto;young=jung;That's me.=Das bin ich.;really=wirklich;next to=neben;dead=tot;guitar=die Gitarre;late=spät;compliment=das Kompliment;shelf=das Regal;lamp=die Lampe;toilet=die Toilette;bath=das Bad;bathroom=das Badezimmer/das Bad;armchair=der Sessel;cupboard=der Schrank;sink=das Abwaschbecken/das Spülbecken;living room=das Wohnzimmer;sofa=das Sofa;table=der Tisch;clock=die Uhr;window=das Fenster;wall=die Mauer/die Wand;drawing=die Zeichnung;chant=der Sprechchor;rule=die Regel/die Vorschrift;describe=beschreiben;area=das Gebiet/die Gegend;make=machen/bilden/herstellen;do=machen/tun;visit=besuchen;culture=die Kultur;guest=der Gast;easy=einfach/leicht;flat=die Wohnung;furniture=die Möbel;important=wichtig;another=ein(e) andere(r/s)/noch ein(e);joke=der Witz;play=spielen;funny=witzig/komisch;You're right.=Du hast Recht.;I can't ...=Ich kann nicht ...;amazing=erstaunlich/unglaublich;bad=schlecht/schlimm;dinner=das Abendessen;have breakfast=frühstücken;have lunch=zu Mittag essen;have dinner=zu Abend essen;time=die Zeit/die Uhrzeit;soon=bald;open=öffnen/aufmachen/offen;stay=bleiben;idea=die Idee/die Vorstellung;many=viele;remember=sich erinnern;all=alles/alle;face=das Gesicht;friendly=freundlich;best friend=mein bester Freund/meine beste Freundin;mean=gemein;laugh=lachen;a bit=ein bisschen/etwas;true=wahr;false=falsch;line=die Zeile;character=der Charakter/die Figur/die Person;already=schon/bereits;story=die Geschichte/die Erzählung;kid=das Kind/Jugendliche(r);her=sie/ihr;life skills=Lebenskompetenzen;make friends=Freunde finden;ask=fragen;Have a go.=Versuch's mal.;high=hoch;put=legen/stellen/tun/setzen;after=nach;address=die Adresse;player=Spieler/Spielerin;a talk=der Vortrag/das Referat/die Rede;give a talk=einen Vortrag/eine Rede halten;the gist=das Wesentliche/der Hauptinhalt;detail=das Detail/die Einzelheit;partner=Partner/Partnerin;stepsister=die Stiefschwester;stepbrother=der Stiefbruder;stepmother=die Stiefmutter;stepfather=der Stiefvater;main topic=das Hauptthema;be good at=gut sein in;first=zuerst/als Erstes;speaker=Sprecher/Sprecherin;4 pm=4 Uhr nachmittags/16 Uhr;4 am=4 Uhr morgens/vormittags";
+const SEED4="robot=der Roboter=Unit 1;Good night.=Gute Nacht.=Unit 1;complete=komplett/vollständig=Unit 1;dark=dunkel=Unit 1;box=der Kasten/die Kiste/das Kästchen=Unit 1;scared=verängstigt=Unit 1;Well, ...=Nun, .../Also, .../Na ja, ...=Unit 1;It's magic.=Es ist Magie/Es ist magisch.=Unit 1;ready=bereit/fertig=Unit 1;tell=jm. von etwas erzählen=Unit 1;take=nehmen/mitnehmen/wegbringen/hinbringen=Unit 1;back=zurück=Unit 1;around=um ... herum=Unit 1;just=einfach nur/bloß=Unit 1;silly=albern/blöd=Unit 1;toy=das Spielzeug=Unit 1;want to=etwas tun wollen;because=weil;at 9 o'clock=um 9 Uhr/um 21 Uhr;half past eight=halb neun;playground=der Schulhof/der Spielplatz;early=früh;always=immer;far=weit (entfernt);bring=mitbringen/herbringen;every=jeder/jede/jedes;before=bevor;go to work=zur Arbeit gehen/fahren;walk=zu Fuß gehen;near=in der Nähe von/nahe (bei);What's he like?=Wie ist er (so)?;love=lieben/sehr mögen;there=da/dort/dahin/dorthin;start=anfangen/beginnen;noise=das Geräusch/der Lärm;map=die Landkarte/der Stadtplan;helpful=hilfreich;grounds=das Gelände;mail=per E-Mail senden;lesson=die (Unterrichts-)Stunde;take a photo=fotografieren/ein Foto machen;timetable=der Stundenplan;be in a hurry=es eilig haben;minute=die Minute;Off we go!=Los geht's!;be lucky=Glück haben;be happy=glücklich sein;secret=das Geheimnis;finish=enden;wait=warten (auf);subject=das (Schul-)Fach;ICT=Informations- und Kommunikationstechnologie;maths=Mathematik;design and technology=Design und Technik;drama=Schauspiel/darstellende Kunst;geography=Geografie;PE=Sportunterricht/Turnen;religion=Religion;science=Naturwissenschaft;break=die Pause;lunch=das Mittagessen;except=außer/bis auf;gym=die Turnhalle;theatre=das Theater;sport=der Sport/die Sportart;do sport=Sport treiben;assembly hall=die Aula;canteen=die Kantine/die (Schul-)Mensa;block=der Block;library=die Bibliothek/die Bücherei;third=dritte(r/s);sound=das Geräusch/der Klang/klingen;rhyme=sich reimen;clever=klug/schlau;man=der Mann;woman=die Frau;men=Männer;women=Frauen;routine=die Routine;exact=genau;evening=der Abend;group=die Gruppe;into=in ... hinein;out of=aus ... heraus;sit down=sich hinsetzen;find out=herausfinden;page=die Seite;context=der Zusammenhang/der Kontext;Excuse me.=Entschuldigung.;next week=nächste Woche;these=diese;classmate=Mitschüler/Mitschülerin/Klassenkamerad/Klassenkameradin;a kind of=eine Art (von);fact=die Tatsache/der Fakt;clear=klar/deutlich;guess=raten/erraten;different=verschieden/anders;second=zweite(r/s);apple=der Apfel;café=das Café;shout=schreien/rufen;put your hand up=sich melden;get up=aufstehen;hurt=verletzen;them=sie/ihnen;activity=die Aktivität;percent=das Prozent;full=voll;part=der Teil;against=gegen;buy=kaufen;give=geben;information=die Information(en);concert=das Konzert;exam=die Prüfung;loud=laut;polite=höflich;scene=die Szene;salad=der Salat;those=die ... dort/jene ...;over=über/vorbei;over there=da drüben/dort drüben;huge=riesig;cook=der Koch/die Köchin;him=ihn/ihm;exciting=aufregend/spannend;beam=projizieren;creepy=gruselig;weekend=das Wochenende;ice cream=das Eis;little=klein;baby=das Baby;calendar=der Kalender;month=der Monat;January=Januar;February=Februar;March=März;April=April;May=Mai;June=Juni;July=Juli;August=August;September=September;October=Oktober;November=November;December=Dezember;winter=Winter;spring=Frühling;summer=Sommer;autumn=Herbst;term=das Trimester;date=das Datum;event=das Ereignis;holidays=die Ferien;end=das Ende/der Schluss;fourth=vierte(r/s);fifth=fünfte(r/s);happen=geschehen/passieren;interesting=interessant;schoolbook=das Schulbuch;Come on!=Na los!/Komm!;crib sheet=der Spickzettel/der Merkzettel;note=die Notiz/die Mitteilung;relax=sich entspannen/sich ausruhen;slow=langsam;fast=schnell;in a clear voice=mit klarer Stimme;worry=sich Sorgen machen;audience=das Publikum/die Zuhörer;technique=die Technik/die Methode;while=während;repeat=wiederholen;tired=müde;stop=aufhören/anhalten;dancer=Tänzer/Tänzerin;just then=genau in dem Moment/gerade dann;beep=piepen;shy=schüchtern/scheu;real=echt/wirklich;broken=zerbrochen/kaputt/gebrochen;better=besser;dirty=schmutzig;wash=waschen;fix=reparieren;look after=aufpassen auf/sich kümmern um;eye=das Auge;at that moment=in diesem Moment;change=(ver)ändern;suddenly=plötzlich/auf einmal;unhappy=unglücklich";
+const SEED5="midnight=Mitternacht;midday=der Mittag/mittags;quarter past ten=Viertel nach zehn;quarter to eleven=Viertel vor elf;typical (of)=typisch (für);long=lang;read out=etwas vorlesen;Miss=übliche Anrede für Lehrerinnen;wear=tragen;special=besondere(r/s);most subjects=die meisten Fächer;often=oft;eat=essen/fressen;food=das Essen/Lebensmittel/das Futter;also=auch;leave=verlassen/zurücklassen;be over=vorbei sein/zu Ende sein;afternoon=der Nachmittag;in the morning=morgens/am Morgen;in the afternoon=nachmittags/am Nachmittag;in the evening=abends/am Abend;on Monday=am Montag;on Monday morning=am Montagmorgen;on Monday afternoon=am Montagnachmittag;on Monday evening=am Montagabend;between=zwischen;without=ohne;try=ausprobieren/versuchen";
+const SEED6="thought bubble=die Gedankenblase;thought=der Gedanke;practise=üben/trainieren/proben;practice=die Übung/das Training;orchestra=das Orchester;goat=die Ziege;join=eintreten/sich anschließen;be bored=gelangweilt sein/sich langweilen;whisper=flüstern;never=nie/niemals;usually=meistens/normalerweise/gewöhnlich;nervous=nervös/aufgeregt;Good luck!=Viel Glück!;cheer=jubeln;believe=glauben;swing=schwingen;arm=der Arm;almost=fast/beinahe;across=quer über;cross=überqueren;feel=fühlen/sich fühlen/sich anfühlen;Well done.=Gut gemacht.;train=trainieren;be thirsty=durstig sein/Durst haben;away=weg/fort;empty=leer;sad=traurig;picnic=das Picknick;pocket=die Tasche;pass=an etwas vorbeigehen/vorbeifahren;shop=der Laden;invitation=die Einladung;be a good sport=sich fair verhalten;angry=wütend;lose=verlieren;win=gewinnen/siegen;take part in=an etwas teilnehmen;interview=jn. interviewen/jn. befragen;move=bewegen/sich bewegen;cross-country running=Geländelauf;role=die Rolle;clean=sauber;rough=grob/brutal/stürmisch;honour=die Ehre;direct=direkt;winner=Gewinner/Gewinnerin/Sieger/Siegerin;show off=angeben;explain=erklären/erläutern;hard=schwer/schwierig/hart;outside=draußen/nach draußen;inside=drinnen/nach drinnen;alone=allein;quite=ziemlich/völlig/ganz;hold=halten;medal=die Medaille;runner=Läufer/Läuferin;chess=das Schach;No way!=Auf keinen Fall!/Kommt nicht in Frage!;I can't stand ...=Ich kann ... nicht ausstehen/ertragen.;scone=kleines rundes Gebäck;agree=gleicher Meinung sein;agree on=sich auf etwas einigen;agree with=jm. zustimmen;hate=hassen;rude=unhöflich/unverschämt;Oh dear!=Oje!;be interested in=sich interessieren für/interessiert sein an;finger=der Finger;plant=die Pflanze;choir=der Chor;instrument=das Instrument;member=das Mitglied;build=bauen;race=das Rennen/der Lauf;cycle=Rad fahren;own=eigen;similar=ähnlich;example=das Beispiel;only=nur;greet=jn. begrüßen;comment=sich äußern/Kommentar abgeben;version=die Version/die Fassung;same=gleich;prepare for=sich auf etwas vorbereiten;Would you like ...?=Möchtest du ...?;I'd like ...=Ich möchte ...;I have to buy ...=Ich muss ... kaufen;list=die Liste;biscuit=der Keks/das Plätzchen;sweet=die Süßigkeit;excited=aufgeregt/gespannt;fruit=das Obst/die Frucht;grape=die Traube/die Weintraube;a few=ein paar/einige;fizzy=sprudelnd;much=viel;juice=der Saft;enough=genug;money=das Geld;of course=natürlich/selbstverständlich;forget=vergessen;trolley=der Einkaufswagen;not ... yet=noch nicht;crisps=Kartoffelchips;monkey=der Affe;pick up=aufheben/hochheben;choose=aussuchen/auswählen;tear=die Träne;arrive=ankommen/eintreffen;point to=auf etwas zeigen/deuten;large=groß;heavy=schwer;call=rufen/anrufen/nennen;plate=der Teller;round=rund;bake=backen;begin=beginnen/anfangen;rainbow=der Regenbogen;recipe=das Rezept/das Kochrezept;ingredient=die Zutat;instruction=die Anweisung;gram=das Gramm;butter=die Butter;sugar=der Zucker;egg=das Ei;flour=das Mehl;chocolate=die Schokolade;bean=die Bohne;bread=das Brot;salt=das Salz;pepper=der Pfeffer;jar=das Einmachglas;pear=die Birne;kiwi=die Kiwi;pineapple=die Ananas;strawberry=die Erdbeere;vegetables=das Gemüse;lettuce=der Kopfsalat;tomato=die Tomate;carrot=die Karotte/die Mohrrübe;cheese=der Käse;add=hinzufügen/ergänzen/addieren;beat=schlagen;until=bis;fridge=der Kühlschrank;oven=der Ofen/der Backofen;cut=schneiden;a piece of ...=ein Stück ...;row=die Reihe;structure=strukturieren/gliedern;method=die Methode;in other ways=auf andere Art und Weise;collect=sammeln;mark=markieren;meal=die Mahlzeit/das Essen;quantity=die Quantität/die Menge;plan=der Plan;meaning=die Bedeutung;compare=vergleichen;mediation=die Sprachmittlung/die Mediation;take notes=Notizen machen;pass on=weitergeben;translate=übersetzen;shower=die Dusche;have a shower=sich duschen;have a bath=baden;present=das Geschenk;lunchtime=die Mittagszeit;be hungry=hungrig sein/Hunger haben;sausage=die Wurst/das Würstchen;look happy=glücklich aussehen;hope=hoffen;stand=stehen/sich hinstellen;bus=der Bus;warm=warm;sun=die Sonne;text=eine SMS schicken;way=die Richtung;down=hinunter/herunter/nach unten;up=hinauf/herauf/nach oben;bark=bellen;hurry=eilen/sich beeilen;towards=auf ... zu/in Richtung";
+const SEED7="I don't think so.=Ich glaube nicht.=Unit 3;out and about=unterwegs;famous=berühmt (für/wegen);sight=die Sehenswürdigkeit;work of art=das Kunstwerk;chips=Pommes frites;neighbourhood=das Viertel/die Gegend/die Umgebung/die Nachbarschaft;strange=seltsam/komisch;cloudy=bewölkt;sunny=sonnig;look up=hochsehen/aufschauen;weather=das Wetter;cry=weinen/schreien/rufen;dream=der Traum;horrible=grauenhaft/entsetzlich;sleep=schlafen;somebody=jemand;yesterday=gestern;get angry=wütend werden/kalt werden;run after=hinterherrennen;slow down=langsamer werden/verlangsamen;growl=knurren;I can't believe my eyes.=Ich traue meinen Augen nicht.;metre=der Meter;pavement=der Gehweg/der Bürgersteig;follow=folgen;post box=der Briefkasten;post office=das Postamt;turn around=sich umdrehen;hide=verstecken/sich verstecken;key=der Schlüssel;magical=zauberhaft/wundervoll/magisch;machine=die Maschine/das Gerät;windy=windig;stormy=stürmisch;rainy=regnerisch;rain=regnen;snowy=schneebedeckt/verschneit;snow=schneien;font=die Schrift/die Schriftart;size=die Größe;title=der Titel/die Überschrift;at the top=oben/am oberen Ende;at the bottom=unten/am unteren Ende;caption=die Bildunterschrift;beautiful=schön;ground=der Boden/der Erdboden;save=speichern/sichern;on the right=rechts/auf der rechten Seite;on the left=links/auf der linken Seite;middle=die Mitte;background=der Hintergrund;foreground=der Vordergrund;throw=werfen;description=die Beschreibung;cost=kosten;pound=das Pfund;everything=alles;turn on=einschalten;turn off=ausschalten;light=das Licht;cage=der Käfig;tool=das Werkzeug;silent=still/leise;still=noch/immer noch;What's the matter?=Was ist denn?/Was ist los?;appear=erscheinen/auftauchen;whose=wessen;brave=mutig/tapfer;project=das Projekt;match=zu etwas passen;feeling=das Gefühl;customer=Kunde/Kundin;ride=die Fahrt/das Fahrgeschäft;decide=beschließen/sich entscheiden;expensive=teuer;cinema=das Kino;suggest=vorschlagen;jewel=das Juwel;bet=wetten;more than=mehr als;serious=ernst/ernsthaft;be in trouble=in Schwierigkeiten sein/Ärger bekommen;Give me a break!=Verschone mich!;worried=besorgt/beunruhigt;truth=die Wahrheit;sell=verkaufen;rescue=retten/die Rettung;bakery=die Bäckerei;for miles=meilenweit;guide=Fremdenführer/Fremdenführerin/Reiseleiter;visitor=Besucher/Besucherin/der Gast;next=als Nächstes;suggestion=der Vorschlag;habit=die Gewohnheit;What else?=Was (sonst) noch?;go black=schwarz werden;ring=klingeln/läuten;opposite=gegenüber von etwas;crazy=verrückt;tall=groß/hoch;tear off=etwas abreißen;paper=das Papier;tiptoe=auf Zehenspitzen gehen;tidy=aufräumen;wash the dishes=das Geschirr abwaschen/spülen;dry=trocknen;hair=das Haar/die Haare;tooth=der Zahn;the best ... ever=die beste ... aller Zeiten;locked=verschlossen;lift=heben;instead=stattdessen;curtain=der Vorhang/die Gardine;honestly=ehrlich;waste=verschwenden;quick=schnell;police=die Polizei;connect=verbinden/verknüpfen;make sb. do sth.=jn. dazu bringen, etwas zu tun;ask sb. to do sth.=jn. bitten, etwas zu tun;view=die Aussicht/der Blick;bench=die Bank;bright=hell;poor=arm;sigh=seufzen;wag=wedeln";
+const SEED8="potato=die Kartoffel=Gemüse;onion=die Zwiebel=Gemüse;garlic=der Knoblauch=Gemüse;cucumber=die Gurke=Gemüse;bell pepper=die Paprika=Gemüse;cabbage=der Kohl=Gemüse;broccoli=der Brokkoli=Gemüse;cauliflower=der Blumenkohl=Gemüse;spinach=der Spinat=Gemüse;corn=der Mais=Gemüse;peas=die Erbsen=Gemüse;mushroom=der Pilz=Gemüse;pumpkin=der Kürbis=Gemüse;radish=das Radieschen/der Rettich=Gemüse;leek=der Lauch=Gemüse;celery=der Sellerie=Gemüse;zucchini=die Zucchini=Gemüse;eggplant=die Aubergine=Gemüse;beetroot=die Rote Bete=Gemüse;asparagus=der Spargel=Gemüse;turnip=die Rübe=Gemüse;kale=der Grünkohl=Gemüse;olive=die Olive=Gemüse;chilli=die Chili=Gemüse;ginger=der Ingwer=Gemüse;herbs=die Kräuter=Gemüse;parsley=die Petersilie=Gemüse;sweet potato=die Süßkartoffel=Gemüse;green beans=die grünen Bohnen=Gemüse;lentil=die Linse=Gemüse;spring onion=die Frühlingszwiebel=Gemüse;fennel=der Fenchel=Gemüse;rocket=der Rucola=Gemüse;sprouts=der Rosenkohl=Gemüse;vegetable=das Gemüse=Gemüse;artichoke=die Artischocke=Gemüse;chives=der Schnittlauch=Gemüse;rhubarb=der Rhabarber=Gemüse;cherry=die Kirsche=Obst;plum=die Pflaume=Obst;peach=der Pfirsich=Obst;apricot=die Aprikose=Obst;lemon=die Zitrone=Obst;lime=die Limette=Obst;grapefruit=die Grapefruit=Obst;mango=die Mango=Obst;melon=die Melone=Obst;watermelon=die Wassermelone=Obst;raspberry=die Himbeere=Obst;blueberry=die Heidelbeere/die Blaubeere=Obst;blackberry=die Brombeere=Obst;cranberry=die Preiselbeere=Obst;gooseberry=die Stachelbeere=Obst;currant=die Johannisbeere=Obst;fig=die Feige=Obst;coconut=die Kokosnuss=Obst;papaya=die Papaya=Obst;pomegranate=der Granatapfel=Obst;passion fruit=die Maracuja=Obst;tangerine=die Mandarine=Obst;nectarine=die Nektarine=Obst;lychee=die Litschi=Obst;avocado=die Avocado=Obst;nut=die Nuss=Obst;peanut=die Erdnuss=Obst;hazelnut=die Haselnuss=Obst;walnut=die Walnuss=Obst;almond=die Mandel=Obst;raisin=die Rosine=Obst;berry=die Beere=Obst;seed=der Samen/der Kern=Obst;peel=die Schale=Obst;cow=die Kuh=Tiere;pig=das Schwein=Tiere;sheep=das Schaf=Tiere;chicken=das Huhn/das Hähnchen=Tiere;hen=die Henne=Tiere;rooster=der Hahn=Tiere;duck=die Ente=Tiere;goose=die Gans=Tiere;turkey=der Truthahn=Tiere;donkey=der Esel=Tiere;lamb=das Lamm=Tiere;calf=das Kalb=Tiere;foal=das Fohlen=Tiere;puppy=der Welpe=Tiere;kitten=das Kätzchen=Tiere;bull=der Stier=Tiere;fox=der Fuchs=Tiere;wolf=der Wolf=Tiere;bear=der Bär=Tiere;deer=das Reh/der Hirsch=Tiere;hare=der Hase=Tiere;squirrel=das Eichhörnchen=Tiere;hedgehog=der Igel=Tiere;mole=der Maulwurf=Tiere;badger=der Dachs=Tiere;owl=die Eule=Tiere;eagle=der Adler=Tiere;swan=der Schwan=Tiere;pigeon=die Taube=Tiere;crow=die Krähe=Tiere;robin=das Rotkehlchen=Tiere;sparrow=der Spatz=Tiere;penguin=der Pinguin=Tiere;ostrich=der Strauß=Tiere;lion=der Löwe=Tiere;tiger=der Tiger=Tiere;elephant=der Elefant=Tiere;giraffe=die Giraffe=Tiere;zebra=das Zebra=Tiere;hippo=das Nilpferd=Tiere;rhino=das Nashorn=Tiere;crocodile=das Krokodil=Tiere;kangaroo=das Känguru=Tiere;koala=der Koala=Tiere;panda=der Panda=Tiere;camel=das Kamel=Tiere;gorilla=der Gorilla=Tiere;leopard=der Leopard=Tiere;cheetah=der Gepard=Tiere;dolphin=der Delfin=Tiere;whale=der Wal=Tiere;shark=der Hai=Tiere;seal=der Seehund/die Robbe=Tiere;octopus=der Krake/der Tintenfisch=Tiere;crab=die Krabbe=Tiere;lobster=der Hummer=Tiere;jellyfish=die Qualle=Tiere;turtle=die Schildkröte=Tiere;frog=der Frosch=Tiere;toad=die Kröte=Tiere;lizard=die Eidechse=Tiere;butterfly=der Schmetterling=Tiere;ant=die Ameise=Tiere;mosquito=die Mücke=Tiere;wasp=die Wespe=Tiere;ladybird=der Marienkäfer=Tiere;worm=der Wurm=Tiere;snail=die Schnecke=Tiere;bat=die Fledermaus=Tiere;zoo=der Zoo=Tiere;farm=der Bauernhof=Tiere;tail=der Schwanz=Tiere;wing=der Flügel=Tiere;feather=die Feder=Tiere;paw=die Pfote=Tiere;fur=das Fell=Tiere;beak=der Schnabel=Tiere;nest=das Nest=Tiere";
+// [Thema, Frage, richtig, [falsch], Erklärung]
+const G=[
+["Familie","My father has two brothers. They are my ___.","uncles",["aunts","cousins"],"uncle = Onkel."],
+["Familie","My mother has two sisters. They are my ___.","aunts",["uncles","cousins"],"aunt = Tante."],
+["Familie","Sara is my cousin. Her mother is my ___.","aunt",["uncle","grandma"],"Die Mutter meiner Cousine ist meine Tante."],
+["Familie","My dad is with his parents. They are my grandpa and ___.","grandma",["aunt","cousin"],"Die Eltern meines Papas: Opa und Oma."],
+["Familie","Kenny and Sally are my ___. They are in Bristol with my uncle and aunt.","cousins",["brothers","parents"],"cousin = Cousin/Cousine."],
+["Possessivbegleiter","What’s that on ___ phone? (dein)","your",["you","our"],"you → your."],
+["Possessivbegleiter","It’s a photo of ___ family. (meine)","my",["their","your"],"I → my."],
+["Possessivbegleiter","That’s my brother Tom, and that’s ___ friend Finn. (sein)","his",["her","their"],"Tom ist ein Junge → his."],
+["Possessivbegleiter","She’s with ___ sister, my aunt Jenna. (ihre)","her",["his","our"],"she → her."],
+["Possessivbegleiter","No, he is ___ uncle Robert. (mein)","my",["his","your"],"I → my."],
+["Possessivbegleiter","And that’s ___ dog, Rafa. (ihr, mehrere)","their",["they","its"],"they → their."],
+["Possessivbegleiter","Yes, we are in ___ garden. (unser)","our",["its","your"],"we → our."],
+["Personen beschreiben","Some people are ___. That isn’t cool. (gemein)","mean",["nice","shy"],"mean = gemein."],
+["Personen beschreiben","Martha and Marcus are very ___. Everyone likes them.","nice",["mean","boring"],"nice = nett."],
+["Personen beschreiben","My friend Sam doesn’t talk a lot. He is very ___.","shy",["loud","mean"],"shy = schüchtern."],
+["Personen beschreiben","Our teacher isn’t ___. He is a very interesting man.","boring",["nice","shy"],"boring = langweilig."],
+["Clubs","Amanda and Mark both go to the ___ club.","drama",["chess","choir"],"drama = Theater/Schauspiel."],
+["Clubs","Caroline and Henry like chess. Which club?","Chess Club",["Drama Club","Choir"],"chess = Schach."],
+["Clubs","Harriet and Ollie sing after school. Which club?","Choir",["Chess Club","Drama Club"],"choir = Chor."],
+["Höflich: nicht mögen","Marcus: „Gardening isn’t my thing.“ Sam: „I can’t stand chess.“ Who is polite?","Marcus",["Sam","Both"],"Marcus sagt es indirekt, Sam zu direkt."],
+["Höflich: nicht mögen","Who is rude (too direct)?","Sam",["Marcus","Nobody"],"„I can’t stand chess“ und „I hate dancing“ sind zu direkt."],
+["Text: Pass the parcel","Pass the parcel is played by two people.","False",["True"],"Alle Spieler sitzen im Kreis."],
+["Text: Pass the parcel","It is a very popular party game.","True",["False"],"Pass the parcel is a very popular party game."],
+["Text: Pass the parcel","You need two presents and many pieces of paper.","False",["True"],"Man braucht ein Geschenk und viele Papierlagen."],
+["Text: Pass the parcel","The players pass the parcel while the music plays.","True",["False"],"Sie reichen es weiter, solange die Musik spielt."],
+["Text: Pass the parcel","A player tears off a piece of paper when the music stops.","True",["False"],"Wenn die Musik stoppt, reißt man eine Lage ab."],
+["Text: Pass the parcel","Everybody gets a present at the end.","False",["True"],"Nur wer die letzte Lage abreißt, findet das Geschenk."],
+["do/does-Fragen","___ you like the library? – Yes, I do.","Do",["Does","Are"],"Frage mit you: Do."],
+["do/does-Fragen","___ Lily like Hugo? – No, she doesn’t.","Does",["Do","Is"],"Lily = she → Does."],
+["do/does-Fragen","Does he talk to you? – Yes, he ___.","does",["do","is"],"Kurzantwort: Yes, he does."],
+["do/does-Fragen","___ they meet every week? – Yes, they do.","Do",["Does","Are"],"they → Do."],
+["do/does-Fragen","Do you often come here? – No, we ___.","don’t",["doesn’t","aren’t"],"we → don’t."],
+["do/does-Fragen","Does steht nur bei …","he, she, it",["I, you, we","we, you, they"],"Does nur mit he/she/it."],
+["do/does-Fragen","___ the Goat Club meet every day?","Does",["Do","Are"],"Goat Club = it → Does."],
+["do/does-Fragen","___ goats live alone? – No, they don’t.","Do",["Does","Is"],"goats = they → Do."],
+["do/go/play","I ___ yoga after school.","do",["go","play"],"do yoga/PE/gardening."],
+["do/go/play","We ___ swimming on Saturdays.","go",["do","play"],"go + -ing: go swimming/cycling."],
+["do/go/play","Zane ___ rugby in the park.","plays",["goes","does"],"play + Sportart/Instrument."],
+["do/go/play","Do you ___ the guitar?","play",["do","go"],"play the guitar."],
+["Häufigkeitsadverbien","never – ___ – often – usually – always","sometimes",["already","soon"],"Von selten bis immer."],
+["Häufigkeitsadverbien","Sunita ___ goes to her grandma’s house. (oft)","often",["never","always"],"often = oft."],
+["Häufigkeitsadverbien","The adverb of frequency comes between the subject and the ___.","verb",["noun","end"],"Subjekt – Adverb – Verb."],
+["Häufigkeitsadverbien","Noah ___ plays computer games. (nie)","never",["always","usually"],"never = nie."],
+["Höflich: nicht mögen","Which is more polite?","Sorry, swimming really isn’t my thing.",["I hate swimming.","Swimming is stupid."],"Man sagt höflich, dass etwas „not my thing“ ist."],
+["Höflich: nicht mögen","Which is more polite?","I don’t really like it.",["I can’t stand it.","I hate it."],"really macht es höflicher."],
+["Höflich: nicht mögen","Which is more polite?","Grapes aren’t my favourite food.",["I hate grapes.","Grapes are disgusting."],"Weniger direkt klingt höflicher."],
+["Höflich: nicht mögen","Which is more polite?","Fish isn’t the best idea.",["Fish is a really weird idea.","Fish is stupid."],"Weniger direkt."],
+["Höflich: nicht mögen","Which sentence is rude (too direct)?","I can’t stand fish.",["Fish isn’t really my thing.","Fish isn’t my favourite food."],"Zu direkt kann unhöflich wirken."],
+["Höflich: Nein sagen","Which answer is polite when you don’t want to do something?","Sorry, I can’t tomorrow.",["Are you crazy?","No way!"],"Freundlich ablehnen mit „Sorry“."],
+["Höflich: Nein sagen","In the UK you have to be ___ to play street music.","14",["16","18"],"Cultures: In Großbritannien ab 14."],
+["wh-Fragen","___ do you like rugby? – Well, it’s fun.","Why",["Where","When"],"Why = warum."],
+["wh-Fragen","___ often do you go running? – Three times a week.","How",["What","Who"],"How often = wie oft."],
+["wh-Fragen","___ do you do it? – In the mornings before school.","When",["Where","Why"],"When = wann."],
+["wh-Fragen","___ does it feel? – It feels great.","How",["Where","Who"],"How does it feel?"],
+["wh-Fragen","___ do you practise? – In Withdean Park.","Where",["When","Why"],"Where = wo."],
+["wh-Fragen","What ___ Hugo like? – He likes music and games.","does",["do","is"],"Hugo = he → does."],
+["wh-Fragen","___ does he wake up? – At 7 am.","When",["Where","Who"],"When = wann."],
+["wh-Fragen","___ do you like Hugo? – Because he’s funny.","Why",["How","When"],"Why → because."],
+["wh-Fragen","Who do you run ___? (mit)","with",["at","on"],"Die Präposition steht am Ende."],
+["Interview","What do you say at the start of an interview?","Hi, my name is …",["Goodbye, and thanks.","You’re welcome."],"Zu Beginn grüßt man."],
+["Interview","What do you say at the end of an interview?","Goodbye, …, and thanks.",["Hi, my name is …","How are you?"],"Am Ende bedankt man sich."],
+["Interview","What do you answer to “Thank you”?","You’re welcome.",["I’m fine.","OK, that’s all."],"You’re welcome = gern geschehen."],
+["have to / would like","Which is more polite?","I’d like to bring a friend.",["I want to bring a friend.","I bring a friend."],"I’d like to klingt höflicher als I want to."],
+["Clubs","You look after plants and flowers in the garden after school. Which club?","Gardening Club",["Chess Club","Yoga Club"],"plants + garden → Gardening Club."],
+["Clubs","You play fast ball games, but rough sports aren’t your thing. Which club?","Table Tennis Club",["Trampolining Club","Film Club"],"fast ball games → Table Tennis."],
+["Clubs","You hear a talk about robots. Which club?","Computer Club",["Film Club","Orchestra"],"robots → Computer Club."],
+["Clubs","You learn some easy exercises to relax. Which club?","Yoga Club",["Chess Club","Computer Club"],"relax + exercises → Yoga."],
+["Rezept","What do you do FIRST in the carrot cake recipe?","Beat the butter, sugar and egg.",["Bake the cake.","Cut the cake."],"Erst schlagen, dann mischen, dann backen."],
+["Rezept","Apple crisps: what do you do AFTER you cut the apples?","Put the pieces on a baking tray.",["Eat the crisps.","Take out the crisps."],"Schneiden → Blech → backen → herausnehmen."],
+["much/many","Noah likes pizza with ___ salami and cheese.","a lot of",["much","many"],"Positive Sätze: a lot of."],
+["much/many","He doesn’t eat ___ vegetables.","many",["much","a little"],"vegetables = zählbar: many."],
+["much/many","He doesn’t eat ___ salad.","much",["many","a few"],"salad = nicht zählbar: much."],
+["much/many","He usually uses ___ bananas.","some",["much","a little"],"some + Mehrzahl."],
+["much/many","He eats ___ strawberries. (ein paar)","a few",["a little","much"],"a few + Mehrzahl."],
+["-ing-Formen","write → ___","writing",["writeing","writting"],"Das e fällt weg."],
+["-ing-Formen","run → ___","running",["runing","runnning"],"Konsonant verdoppeln."],
+["-ing-Formen","sit → ___","sitting",["siting","sitng"],"Konsonant verdoppeln."],
+["-ing-Formen","make → ___","making",["makeing","makking"],"Das e fällt weg."],
+["-ing-Formen","swim → ___","swimming",["swiming","swimiing"],"Konsonant verdoppeln."],
+["-ing-Formen","play → ___","playing",["plaiing","plaing"],"Normalfall: + ing."],
+["present progressive","Present progressive = a form of ___ + the -ing form.","be",["do","have"],"be + Verb-ing."],
+["present progressive","Mum and Dad ___ working this morning.","are",["is","am"],"Mum and Dad = they → are."],
+["present progressive","Alice ___ crying about her robot.","is",["are","am"],"Alice = she → is."],
+["present progressive","___ that seagull eating a snake?","Is",["Are","Do"],"Frage: Is + Subjekt + -ing."],
+["present progressive","___ those children playing cricket?","Are",["Is","Do"],"Mehrzahl: Are."],
+["present progressive","Is he wearing a uniform? – No, he ___.","isn’t",["doesn’t","aren’t"],"No, he isn’t."],
+["present progressive","Are you having fun? – Yes, I ___.","am",["do","are"],"Yes, I am."],
+["Simple Present oder Progressive","Noah never ___ me. (text)","texts",["is texting","texting"],"Routine (never) → simple present."],
+["Simple Present oder Progressive","Wait a minute. Noah ___ me.","is texting",["texts","text"],"Jetzt gerade → progressive."],
+["Simple Present oder Progressive","Friends always ___ the truth.","tell",["are telling","tells"],"always = Routine → simple present."],
+["Simple Present oder Progressive","I ___ the truth now.","am telling",["tell","tells"],"now → progressive."],
+["Simple Present oder Progressive","We usually ___ lunch at 1 pm on Sundays.","have",["are having","having"],"usually → simple present."],
+["Simple Present oder Progressive","We ___ lunch right now. (make)","are making",["make","makes"],"right now → progressive."],
+["wh-Fragen (jetzt)","___ is happening? (Was)","What",["Why","Where"],"What is happening?"],
+["wh-Fragen (jetzt)","___ are those seagulls standing in front of the plates? (Warum)","Why",["What","Who"],"Why = warum."],
+["wh-Fragen (jetzt)","___ are they flying to? (Wohin)","Where",["Who","Why"],"Where … to?"],
+["wh-Fragen (jetzt)","___ are you cheering for? (Für wen)","Who",["What","Where"],"Who … for?"],
+["Wetter","It’s 35 degrees. It’s ___.","hot",["cold","cool"],"hot = heiß."],
+["Wetter","It’s freezing. It’s ___.","cold",["warm","hot"],"cold = kalt."],
+["Orte (Nachbarschaft)","“I’d like some bread, please.” Where are the people?","In a bakery",["In a library","In a cinema"],"bakery = Bäckerei."],
+["Orte (Nachbarschaft)","“Do you have any Harry Potter books?” Where?","In a library",["In a bakery","In a café"],"library = Bibliothek."],
+["Orte (Nachbarschaft)","“What do we still have on our list?” Where?","In a supermarket",["In a park","In a hotel"],"supermarket = Supermarkt."],
+["Orte (Nachbarschaft)","“Can I get some sweets before the film?” Where?","In a cinema",["In a hotel","In a bakery"],"cinema = Kino."],
+["Orte (Nachbarschaft)","“This is a good place for our picnic.” Where?","In a park",["In a library","In a supermarket"],"park = Park."],
+["Orte (Nachbarschaft)","“Would you like something to eat? – Just a smoothie, please.” Where?","In a café",["In a cinema","In a library"],"café = Café."],
+["Höflichkeit","Wer sagt: „Sorry. I’m late.“?","A student",["A teacher","A parent"],"Wer zu spät kommt, entschuldigt sich: ein Schüler."],
+["Höflichkeit","Wer sagt: „Please don’t be late again.“?","A teacher",["A student","A parent"],"Die Lehrerin bittet den Schüler, nicht wieder zu spät zu kommen."],
+["Höflichkeit","Wer sagt: „Find a partner, please.“?","A teacher",["A student","A parent"],"Die Lehrerin gibt eine Arbeitsanweisung."],
+["Höflichkeit","Wer sagt: „Sorry, I’m not finished.“?","A student",["A teacher","A parent"],"Der Schüler braucht mehr Zeit."],
+["Höflichkeit","Welche drei Wendungen sind in Englisch besonders höflich?","please, thank you, sorry",["hello, bye, yes","cool, great, OK"],"Die drei wichtigen Höflichkeitswörter."],
+["Text: School calendar","When is parents’ evening?","23rd March",["12th November","30th June"],"Parents’ evening is on 23rd March."],
+["Text: School calendar","When is sports day?","30th June",["20th July","7th September"],"Sports day is on 30th June."],
+["Text: School calendar","When does the autumn term start?","7th September",["16th January","26th April"],"The autumn term starts on 7th September."],
+["Text: School calendar","When is open evening?","12th November",["23rd March","17th December"],"Open evening is on 12th November."],
+["Text: School calendar","When does the summer term end?","20th July",["8th April","31st August"],"The term ends on 20th July."],
+["Text: School calendar","When do the summer holidays end?","31st August",["20th July","30th June"],"The summer holidays end on 31st August."],
+["Text: School calendar","When does the spring term start?","16th January",["7th September","8th April"],"The spring term starts on 16th January."],
+["Ordnungszahlen","1st = ___","first",["one","oneth"],"1st = first."],
+["Ordnungszahlen","2nd = ___","second",["twoth","twond"],"2nd = second."],
+["Ordnungszahlen","3rd = ___","third",["threeth","thirt"],"3rd = third."],
+["Ordnungszahlen","5th = ___","fifth",["fiveth","fivth"],"5th = fifth."],
+["Ordnungszahlen","8th = ___","eighth",["eightth","eigth"],"8th = eighth."],
+["Ordnungszahlen","9th = ___","ninth",["nineth","ninetth"],"9th = ninth."],
+["Ordnungszahlen","12th = ___","twelfth",["twelveth","twelvth"],"12th = twelfth."],
+["Ordnungszahlen","21st = ___","twenty-first",["twenty-one","twenty-oneth"],"21st = twenty-first."],
+["Satzbau: Zeit & Ort","Welcher Satz ist richtig?","We have a short break at 10:45.",["We have at 10:45 a short break.","We a short break have at 10:45."],"Subjekt – Verb – Objekt – Zeit."],
+["Satzbau: Zeit & Ort","Welcher Satz ist richtig?","After lunch we have two lessons.",["After lunch have we two lessons.","We after lunch two lessons have."],"Steht die Zeit vorn, folgt trotzdem Subjekt – Verb."],
+["Satzbau: Zeit & Ort","Welcher Satz ist richtig?","We can have an ice cream in my dad’s café on Saturday.",["We can have an ice cream on Saturday in my dad’s café.","We can an ice cream have in my dad’s café on Saturday."],"Ort kommt vor Zeit."],
+["Plural","One school, two ___.","schools",["schooles","schoolies"],"Meist nur -s."],
+["Plural","One class, two ___.","classes",["classs","classies"],"Nach -s, -ch, -sh, -x: -es."],
+["Plural","One library, two ___.","libraries",["librarys","libraryes"],"Konsonant + y → ies."],
+["Plural","One baby, two ___.","babies",["babys","babyes"],"Konsonant + y → ies."],
+["Plural","One boy, two ___.","boys",["boies","boyes"],"Vokal + y: nur -s."],
+["Plural","One child, two ___.","children",["childs","childes"],"Unregelmäßig: children."],
+["Plural","One box, two ___.","boxes",["boxs","boxies"],"Nach -x: -es."],
+["Plural","One sandwich, two ___.","sandwiches",["sandwichs","sandwichies"],"Nach -ch: -es."],
+["Plural","One story, two ___.","stories",["storys","storyes"],"Konsonant + y → ies."],
+["Plural","One Monday, two ___.","Mondays",["Mondaies","Mondayes"],"Vokal + y: nur -s."],
+["this/that/these/those","___ apple here is red.","This",["That","These"],"this = Einzahl, nah."],
+["this/that/these/those","___ apples here are red.","These",["Those","This"],"these = Mehrzahl, nah."],
+["this/that/these/those","___ apple over there is green.","That",["This","Those"],"that = Einzahl, weiter weg."],
+["this/that/these/those","___ apples over there are green.","Those",["These","That"],"those = Mehrzahl, weiter weg."],
+["Objektpronomen","Alice is my best friend. I really like ___.","her",["she","hers"],"Nach dem Verb: her."],
+["Objektpronomen","Noah is in 7L. I sit next to ___.","him",["he","his"],"Nach der Präposition: him."],
+["Objektpronomen","My tie is red. I wear ___ at school.","it",["they","them"],"tie = it."],
+["Objektpronomen","Lily, I have a secret. I can tell ___ later.","you",["she","her"],"Alice spricht Lily an → you."],
+["Objektpronomen","Where are all my schoolbooks? I can’t find ___.","them",["they","it"],"Mehrzahl, Objekt: them."],
+["Objektpronomen","My parents bring Noah to school. They bring ___ every day.","him",["he","his"],"Noah → him."],
+["Objektpronomen","If you know the answer, write ___ down.","it",["them","he"],"answer = it."],
+["Objektpronomen","The 7L students are nice. I see ___ every day.","them",["they","their"],"Mehrzahl, Objekt: them."],
+["Objektpronomen","Mrs Bond is nice to ___ and the other students. (mich)","me",["I","my"],"I → me."],
+["Fragen & Verneinung","Noah’s dog ___ live in a tree.","doesn’t",["don’t","isn’t"],"dog = it → doesn’t."],
+["Fragen & Verneinung","Fish ___ like running.","don’t",["doesn’t","aren’t"],"Mehrzahl → don’t."],
+["Imperativ","___ on time for your lessons.","Be",["Are","Is"],"Befehl mit be: Be …"],
+["Imperativ","___ eat in the classroom.","Don’t",["Not","No"],"Verneinter Befehl: Don’t + Verb."],
+["Text: Monday morning","Who always comes early and lives in Hove?","Sunita",["Alice","Lily","Zane"],"Sunita: „I always come early. I live in Hove.“"],
+["Text: Monday morning","Who plays rugby for the school?","Jake",["Noah","Mr Lee","Sunita"],"Alice: „He plays rugby for the school.“ (Jake)"],
+["Text: Monday morning","Who walks to school with her brother?","Alice",["Sunita","Lily","Camilla"],"Alice: „I walk to school with my brother.“"],
+["Text: Monday morning","Who brings Sunita to school every day?","Her mum",["Her brother","Lily","Mr Lee"],"Sunita: „My mum brings me to school.“"],
+["Text: Monday morning","Who has a big secret?","Alice",["Lily","Noah","Sunita"],"Alice: „I have a secret, Lily – a big secret.“"],
+["Text: Monday morning","Who can’t find his timetable?","Noah",["Zane","Jake","Mr Lee"],"Noah: „I can’t find my timetable.“"],
+["Text: Monday morning","Who says: „I make maps on my computer“?","Sunita",["Alice","Lily","Noah"],"Sunita macht Karten am Computer."],
+["Text: Monday morning","Who isn’t at school today?","Tim",["Zane","Camilla","Sunita"],"Sunita: „He isn’t here, sir.“ (Tim)"],
+["Text: Monday morning","Jake is in Year ___.","9",["7","11"],"Alice: „He’s in Year 9.“"],
+["Text: Monday morning","French starts in ___ minutes.","four",["two","six"],"Lily: „French starts in four minutes.“"],
+["Text: Monday morning","What time is it on Monday morning in the text?","Half past eight",["Half past nine","Quarter past eight"],"It’s half past eight on Monday morning."],
+["Text: Monday morning","Where does Sunita live?","In Hove",["In Patcham","In Brighton"],"Sunita: „I live in Hove.“"],
+["Simple Present","Sunita ___ in Hove.","lives",["live","living"],"Sunita = she → lives."],
+["Simple Present","Her mum ___ her to school every day.","brings",["bring","bringing"],"her mum = she → brings."],
+["Simple Present","Jake ___ rugby for the school.","plays",["play","playing"],"Jake = he → plays."],
+["Simple Present","I ___ to school with my brother.","walk",["walks","walking"],"Bei I kein -s."],
+["Simple Present","He ___ computers.","loves",["love","loving"],"he → loves."],
+["Obst & Gemüse","I eat ___ apple every day.","an",["a","the"],"apple beginnt mit einem Vokal: an."],
+["Obst & Gemüse","He eats ___ banana.","a",["an","the"],"banana beginnt mit b: a."],
+["Obst & Gemüse","Cherries are red. ___ are sweet.","They",["It","He"],"Mehrzahl → they."],
+["Obst & Gemüse","The potato is big. ___ is brown.","It",["They","He"],"Einzahl (Ding) → it."],
+["Obst & Gemüse","I like ___. (Kirschen)","cherries",["cherry","cherrys"],"Mehrzahl: y → ies."],
+["Obst & Gemüse","One potato, two ___.","potatoes",["potatos","potatoe"],"Bei potato: Mehrzahl mit -es."],
+["Obst & Gemüse","One tomato, three ___.","tomatoes",["tomatos","tomatoe"],"Bei tomato: Mehrzahl mit -es."],
+["Obst & Gemüse","One strawberry, two ___.","strawberries",["strawberrys","strawberryes"],"Mehrzahl: y → ies."],
+["Obst & Gemüse","One peach, four ___.","peaches",["peachs","peachies"],"Nach -ch: Mehrzahl mit -es."],
+["Obst & Gemüse","A cucumber ___ green.","is",["are","am"],"Einzahl → is."],
+["Obst & Gemüse","Peas ___ small and green.","are",["is","am"],"Mehrzahl → are."],
+["Obst & Gemüse","How ___ apples do you want? (viele)","many",["much","a little"],"Zählbar (apples): many."],
+["Obst & Gemüse","I don’t want ___ juice. (viel)","much",["many","a few"],"Nicht zählbar (juice): much."],
+["Tiere","A cow ___ milk.","gives",["give","giving"],"cow = it → gives."],
+["Tiere","Cows ___ grass.","eat",["eats","eating"],"Mehrzahl → eat."],
+["Tiere","The bear ___ in winter.","sleeps",["sleep","sleeping"],"bear = it → sleeps."],
+["Tiere","Penguins ___ fly.","can’t",["can","don’t"],"can’t = kann nicht."],
+["Tiere","My dog ___ a long tail.","has",["have","is"],"my dog = it → has."],
+["Tiere","___ a fox live in the forest?","Does",["Do","Is"],"Frage mit a fox (= it): Does."],
+["Tiere","___ lions live in Germany?","Do",["Does","Is"],"Frage mit lions (= they): Do."],
+["Tiere","One mouse, two ___.","mice",["mouses","mouse"],"Unregelmäßiger Plural: mice."],
+["Tiere","One sheep, two ___.","sheep",["sheeps","sheepes"],"sheep bleibt in der Mehrzahl gleich."],
+["Tiere","One wolf, two ___.","wolves",["wolfs","wolfes"],"wolf → wolves."],
+["Tiere","The kitten ___ sleeping on the sofa.","is",["are","am"],"kitten = it → is."],
+["Tiere","The frogs ___ in the water.","are",["is","am"],"Mehrzahl → are."],
+["to be","I ___ Mia.","am",["is","are"],"Zu „I“ gehört „am“."],
+["to be","He ___ my friend.","is",["am","are"],"Zu he/she/it gehört „is“."],
+["to be","We ___ in class 5.","are",["is","am"],"Zu we/you/they gehört „are“."],
+["to be","___ you ten years old?","Are",["Is","Am"],"Frage mit you: „Are you …?“"],
+["have got","I ___ got a dog.","have",["has","is"],"Zu I/you/we/they gehört „have got“."],
+["have got","She ___ got two brothers.","has",["have","is"],"Zu he/she/it gehört „has got“."],
+["have got","___ he got a bike?","Has",["Have","Is"],"Frage mit he: „Has he got …?“"],
+["have got","They ___ got a big house.","have",["has","are"],"Zu they gehört „have got“."],
+["Personalpronomen","Anna is my sister. ___ is ten.","She",["He","It"],"Mädchen → she."],
+["Personalpronomen","Tom and I are friends. ___ play football.","We",["They","You"],"Tom and I → we."],
+["Personalpronomen","Mr Smith is a teacher. ___ is nice.","He",["She","It"],"Mann → he."],
+["Personalpronomen","The dog is small. ___ is brown.","It",["He","They"],"Tier/Ding → it."],
+["Possessivbegleiter","This is Anna. ___ bag is red.","Her",["His","Its"],"Anna ist ein Mädchen → her."],
+["Possessivbegleiter","Tom has a dog. ___ dog is big.","His",["Her","Our"],"Tom ist ein Junge → his."],
+["Possessivbegleiter","We love ___ school.","our",["their","my"],"We → our."],
+["Possessivbegleiter","I like ___ teacher.","my",["me","I"],"I → my."],
+["Simple Present","She ___ football.","plays",["play","playing"],"he/she/it bekommt ein -s."],
+["Simple Present","I ___ milk.","like",["likes","liking"],"Bei I kein -s."],
+["Simple Present","He ___ his homework at four.","does",["do","doing"],"he/she/it → does."],
+["Simple Present","My brother ___ in Berlin.","lives",["live","living"],"my brother = he → lives."],
+["Fragen & Verneinung","___ she have a dog?","Does",["Do","Is"],"Frage mit he/she/it: Does."],
+["Fragen & Verneinung","I ___ not like fish.","do",["does","am"],"Verneinung bei I: do not."],
+["Fragen & Verneinung","Where ___ you from?","are",["do","is"],"Frage mit to be: Where are you from?"],
+["Fragen & Verneinung","He ___ not play tennis.","does",["do","is"],"Verneinung bei he: does not."],
+["Satzbau","Welcher Satz ist richtig?","I like football very much.",["I very much like football.","Like I football very much."],"Subjekt – Verb – Objekt – Zusatz."],
+["Satzbau","Welcher Satz ist richtig?","She has got a cat.",["She got has a cat.","Has she got a cat."],"Aussagesatz: Subjekt vor Verb."],
+["Satzbau","Welcher Satz ist richtig?","Do you play tennis?",["You do play tennis?","Play you tennis?"],"Frage: Do + Subjekt + Verb."],
+["Satzbau","Welcher Satz ist richtig?","On Sundays we play football.",["On Sundays play we football.","We on Sundays football play."],"Das Verb steht direkt nach dem Subjekt."],
+["Satzbau","Welcher Satz ist richtig?","My brother is at school today.",["My brother at school is today.","Is my brother at school today."],"Subjekt – Verb – Ort – Zeit."],
+["Satzbau","Welcher Satz ist richtig?","Tom likes pizza and cheese.",["Tom pizza likes and cheese.","Likes Tom pizza and cheese."],"Subjekt – Verb – Objekt."],
+["to be","My parents ___ at work.","are",["is","am"],"my parents = they → are."],
+["to be","___ Tom your brother?","Is",["Are","Am"],"Frage mit Tom (= he): Is."],
+["to be","I ___ not tired.","am",["is","are"],"Zu I gehört am."],
+["to be","You ___ my best friend.","are",["is","am"],"Zu you gehört are."],
+["have got","My cat ___ got green eyes.","has",["have","is"],"my cat = it → has got."],
+["have got","___ you got a pen?","Have",["Has","Are"],"Frage mit you: Have you got …?"],
+["have got","Tom and Ben ___ got a ball.","have",["has","are"],"Tom and Ben = they → have got."],
+["Personalpronomen","Mia and Anna are friends. ___ are ten.","They",["We","She"],"Mehrere Personen (nicht ich) → they."],
+["Personalpronomen","Mum, ___ are great!","you",["she","we"],"Man spricht Mum direkt an → you."],
+["Possessivbegleiter","My sister has a bike. ___ bike is new.","Her",["His","Our"],"sister → her."],
+["Possessivbegleiter","Tom and Ben love ___ garden.","their",["our","his"],"they → their."],
+["Possessivbegleiter","Is this ___ pen, Mia?","your",["my","her"],"you → your."],
+["Simple Present","We ___ English on Monday.","have",["has","having"],"we → have."],
+["Simple Present","Mum ___ breakfast at seven.","makes",["make","making"],"Mum = she → makes."],
+["Simple Present","The children ___ in the garden.","play",["plays","playing"],"the children = they → play."],
+["Fragen & Verneinung","___ they like pizza?","Do",["Does","Is"],"Frage mit they: Do."],
+["Fragen & Verneinung","She ___ not like milk.","does",["do","is"],"Verneinung bei she: does not."],
+["Fragen & Verneinung","What ___ you eat for breakfast?","do",["does","are"],"Frage mit you: do."],
+["Fragen & Verneinung","___ your brother play football?","Does",["Do","Is"],"your brother = he → Does."],
+["There is/are","There ___ two birds on the tree.","are",["is","am"],"Mehrzahl → There are."],
+["There is/are","There ___ a dog on the grass.","is",["are","do"],"Einzahl → There is."],
+["There is/are","___ there any cats in your garden?","Are",["Is","Do"],"Frage mit Mehrzahl: Are there any …?"],
+["There is/are","There ___ no school on Sundays.","is",["are","do"],"There’s no school = Es gibt keine Schule."],
+["can/can’t","I ___ speak English, but I can’t speak French.","can",["am","do"],"can + Grundform."],
+["can/can’t","___ you help me, please?","Can",["Do","Are"],"Frage mit can: Can you …?"],
+["can/can’t","Tom is too small. He ___ swim.","can’t",["can","don’t"],"Verneinung von can: can’t."],
+["Präpositionen","The cat is ___ front of the dog.","in",["on","at"],"in front of = vor."],
+["Präpositionen","The bag is ___ my chair.","under",["at","in"],"under = unter."],
+["Präpositionen","Come and sit ___ to me.","next",["near","by"],"next to = neben."],
+["Präpositionen","We have English ___ Monday.","on",["in","at"],"Bei Wochentagen: on."],
+["Genitiv (’s)","This is ___ book. (Toms)","Tom’s",["Toms","Tom"],"Besitz: Name + ’s."],
+["Genitiv (’s)","Where is ___ bag? (Annas)","Anna’s",["Annas","Anna"],"Besitz: Name + ’s."],
+["Genitiv (’s)","This is ___ mum. (Mias)","Mia’s",["Mias","Mia"],"Besitz: Name + ’s."],
+["Artikel a/an","I have ___ apple.","an",["a","the"],"Vor Vokal: an."],
+["Artikel a/an","She is ___ teacher.","a",["an","the"],"Vor Konsonant: a."],
+["Artikel a/an","This is ___ old book.","an",["a","the"],"old beginnt mit Vokal: an."],
+["this/that/these/those","I like ___ pens here. (diese)","these",["this","those"],"these = Mehrzahl, hier."],
+["this/that/these/those","I like ___ bag here. (diese)","this",["these","those"],"this = Einzahl, hier."],
+["this/that/these/those","I don’t like ___ pencils over there. (jene)","those",["that","these"],"those = Mehrzahl, dort."],
+["Objektpronomen","Look, there’s Noah. Can you see ___?","him",["he","his"],"Nach dem Verb: him."],
+["Objektpronomen","Mia is my friend. I help ___.","her",["she","hers"],"Nach dem Verb: her."],
+["Objektpronomen","Can you see ___? (uns)","us",["we","our"],"Objekt zu we: us."],
+["Objektpronomen","The boys are here. Can you see ___?","them",["they","their"],"Objekt zu they: them."],
+["Uhrzeit","08:30 = ___ eight.","half past",["half to","quarter past"],"half past eight = halb neun."],
+["Uhrzeit","We get up ___ 6 o’clock.","at",["on","in"],"Bei Uhrzeiten: at."],
+["Plural","one man – two ___","men",["mans","man"],"Unregelmäßiger Plural: men."],
+["Plural","one woman – four ___","women",["womans","woman"],"Unregelmäßiger Plural: women."],
+["Imperativ","___ the chairs into the dining room, please.","Take",["Takes","Taking"],"Befehl: Grundform des Verbs."],
+["Imperativ","___ be shy! Go and ask him.","Don’t",["Not","No"],"Verneinter Befehl: Don’t + Verb."],
+["Uhrzeit","10:15 = quarter ___ ten","past",["to","after"],"quarter past = Viertel nach."],
+["Uhrzeit","10:45 = quarter ___ eleven","to",["past","at"],"quarter to = Viertel vor."],
+["Simple Present","Dad ___ the house at 8 am every day.","leaves",["leave","leaving"],"Dad = he → leaves."],
+["Simple Present","He always ___ to help his sister.","tries",["try","trys"],"try → he tries (y → ies)."],
+["Simple Present","My dog ___ at 6 pm.","eats",["eat","eating"],"my dog = it → eats."],
+["Häufigkeitsadverbien","My brother ___ takes our dog to the park. (nie)","never",["always","usually"],"never = nie."],
+["Häufigkeitsadverbien","We ___ do sport on Saturdays. (oft)","often",["never","always"],"often = oft."],
+["Häufigkeitsadverbien","I ___ have breakfast at seven. (meistens)","usually",["never","sometimes"],"usually = meistens."],
+["do/does-Fragen","___ you like basketball?","Do",["Does","Are"],"Frage mit you: Do you …?"],
+["do/does-Fragen","___ she join the club?","Does",["Do","Is"],"Frage mit she: Does she …?"],
+["do/does-Fragen","Do you like tennis? – Yes, I ___.","do",["does","am"],"Kurzantwort: Yes, I do."],
+["do/does-Fragen","Does he play chess? – No, he ___.","doesn’t",["don’t","isn’t"],"Kurzantwort: No, he doesn’t."],
+["do/does-Fragen","___ do you live? (Wo)","Where",["Who","When"],"Where = wo."],
+["do/does-Fragen","___ is your birthday? (Wann)","When",["Where","Who"],"When = wann."],
+["have to / would like","We ___ to go now. (müssen)","have",["has","are"],"we have to = wir müssen."],
+["have to / would like","He ___ to buy orange juice. (muss)","has",["have","is"],"he has to = er muss."],
+["have to / would like","___ you like to go shopping with me?","Would",["Do","Are"],"Would you like …? = Möchtest du …?"],
+["have to / would like","I’d like ___ stay here.","to",["for","at"],"I’d like to … = Ich möchte …"],
+["much/many","I don’t have ___ friends.","many",["much","a little"],"Bei Zählbarem (friends): many."],
+["much/many","Dad doesn’t have ___ time for me.","much",["many","a few"],"Bei Nicht-Zählbarem (time): much."],
+["much/many","I have just ___ friends. (ein paar)","a few",["a little","much"],"a few = ein paar."],
+["present progressive","Look! The dog ___ running after the cat.","is",["are","am"],"he/she/it + is + Verb-ing."],
+["present progressive","The children ___ playing in the garden.","are",["is","am"],"they + are + Verb-ing."],
+["present progressive","I ___ doing my homework now.","am",["is","are"],"I + am + Verb-ing."],
+["present progressive","She is ___ a letter. (schreiben)","writing",["write","writes"],"is + Verb-ing (write → writing)."],
+["present progressive","The dog is ___ at the door. (bellen)","barking",["bark","barks"],"is + Verb-ing."],
+["present progressive","___ you watching TV?","Are",["Do","Is"],"Frage: Are you …ing?"],
+["present progressive","___ Jon sleeping?","Is",["Are","Does"],"Frage: Is he …ing?"],
+["present progressive","She isn’t ___ football today. (spielen)","playing",["play","plays"],"isn’t + Verb-ing."],
+["Wetter","Take an umbrella, it’s ___. (regnerisch)","rainy",["sunny","snowy"],"rainy = regnerisch."],
+["Wetter","The sun is out. It’s ___. (sonnig)","sunny",["cloudy","stormy"],"sunny = sonnig."],
+["Wetter","There is snow everywhere. It’s ___.","snowy",["windy","sunny"],"snowy = verschneit."],
+["to be","She ___ not here.","is",["am","are"],"she is not = she isn’t."],
+["to be","They ___ not together.","are",["is","am"],"they are not = they aren’t."],
+["to be","I ___ not so sure.","am",["is","are"],"I am not = I’m not."],
+["Personalpronomen","I can see Lily. ___ is a student.","She",["He","It"],"Lily ist ein Mädchen → she."],
+["Personalpronomen","I can see a flower. ___ is orange.","It",["He","She"],"Blume (Ding) → it."],
+["Personalpronomen","I can see two people. ___ are friends.","They",["We","It"],"Mehrere Personen → they."],
+["can/can’t","Seagulls ___ talk.","can’t",["can","don’t"],"can’t = kann nicht."],
+["can/can’t","Dogs ___ sit and run.","can",["can’t","are"],"can = können."],
+["Satzbau","Welcher Satz ist richtig?","There is a small garden.",["There is a garden small.","There a small is garden."],"Das Adjektiv steht vor dem Nomen."],
+["Satzbau","Welcher Satz ist richtig?","Our living room is very tidy.",["Our living room very is tidy.","Our room living is tidy very."],"very steht vor dem Adjektiv."],
+["Satzbau","Welcher Satz ist richtig?","We have a big flat.",["We have a flat big.","We a big have flat."],"Subjekt – Verb – Artikel – Adjektiv – Nomen."]
+];
+// [Satz, Lösung, Erklärung]
+const LT=[
+["I ___ ten years old. (sein)","am","Zu „I“ gehört „am“."],
+["She ___ my best friend. (sein)","is","Zu she gehört „is“."],
+["We ___ got a dog. (haben)","have","Zu we gehört „have got“."],
+["He ___ got a new bike. (haben)","has","Zu he gehört „has got“."],
+["Anna ___ tennis on Monday. (spielen)","plays","Bei she/he/it kommt ein -s ans Verb."],
+["My brother ___ pizza. (mögen)","likes","my brother = he → likes."],
+["They ___ in Hamburg. (leben)","live","Bei they kein -s."],
+["___ are you from? (Woher)","Where","Where = wo/woher."],
+["This is Tom. ___ mother is a teacher. (sein/seine)","His","Tom ist ein Junge → his."],
+["We love ___ school. (unsere)","our","we → our."],
+["Mia has a cat. ___ cat is small. (ihre)","Her","Mia ist ein Mädchen → her."],
+["I don’t ___ fish. (mögen)","like","Nach don’t steht die Grundform."],
+["___ she like apples?","Does","Frage mit she: Does."],
+["The ___ is in the garden. (Hund)","dog","dog = Hund."],
+["My ___ is nine years old. (Schwester)","sister","sister = Schwester."],
+["Happy ___! (Geburtstag)","birthday","birthday = Geburtstag."],
+["Look at the boy. ___ is my cousin. (er)","He","Junge → he."],
+["I eat bread and drink ___. (Milch)","milk","milk = Milch."],
+["We have English ___ Monday. (am)","on","Bei Wochentagen steht on."],
+["She ___ her homework at four. (machen)","does","Hausaufgaben machen = do homework; she → does."],
+["Tom and Ben ___ in the garden. (spielen)","play","they → play."],
+["My dog ___ a big ball. (haben)","has","my dog = it → has."],
+["I ___ to school by bike. (gehen)","go","Bei I kein -s."],
+["What ___ you eat for lunch? (tun)","do","Frage mit you: do."],
+["Our teacher writes on the ___. (Tafel)","board","board = Tafel."],
+["It is hot. I am ___. (durstig)","thirsty","thirsty = durstig."],
+["He doesn’t ___ football. (spielen)","play","Nach doesn’t steht die Grundform."],
+["___ you like cats? (Mögt ihr)","Do","Frage mit you: Do."],
+["We ___ not at home today. (sind)","are","we → are."],
+["Is this ___ book? (dein)","your","you → your."],
+["The cat likes ___ milk. (ihre)","its","Bei Tieren und Dingen: its."],
+["Good ___! (Nacht)","night","Good night = Gute Nacht."],
+["Zane is ___ home. (daheim)","at","at home = daheim."],
+["Everyone knows that London ___ in England. (ist)","is","London = it → is."],
+["Come and see ___. (mich)","me","me = mich/mir."],
+["Can you see ___? (uns)","us","us = uns."],
+["Let’s ___ together. (sitzen)","sit","Let’s + Grundform."],
+["I ___ Scout. She’s so cool. (mögen)","like","like = mögen."],
+["I ___ have school on Sundays. (Verneinung)","don't","I don’t have … = Ich habe kein …"],
+["Can you ___ French? (sprechen)","speak","speak = sprechen."],
+["Let’s ___ a film today. (anschauen)","watch","watch a film = einen Film anschauen."],
+["Luca is ten, ___ Jack is fourteen. (aber)","but","but = aber."],
+["There’s ___ school on Sundays. (kein)","no","no = kein/keine."],
+["___ you are. (Hier, bitte.)","Here","Here you are. = Hier, bitte."],
+["I like running. ___ about you? (Und du?)","What","What about you? = Und du?"],
+["Go to page 147 for ___ help. (mehr)","more","more = mehr."],
+["The cat is ___ front of the dog. (vor)","in","in front of = vor."],
+["The dog is ___ the cat. (hinter)","behind","behind = hinter."],
+["Come and sit ___ to me. (neben)","next","next to = neben."],
+["Our maths teacher is ___ nice. (wirklich)","really","really = wirklich."],
+["See you ___. (später)","later","later = später."],
+["I live in a ___, not in a house. (Wohnung)","flat","flat = Wohnung."],
+["Here are ___ sandwiches for you. (einige)","some","some = einige."],
+["Your father’s sister is your ___. (Tante)","aunt","aunt = Tante."],
+["Seagulls are cool, ___ I like Scout. (also)","so","so = also/deshalb."],
+["I have ___ when I watch films. (Spaß)","fun","have fun = Spaß haben."],
+["Be ___, please. (leise)","quiet","quiet = ruhig/leise."],
+["Where are you ___? (woher)","from","Where are you from?"],
+["Can I use ___ phone, please? (dein)","your","you → your."],
+["My favourite book is ___ The Monster. (heißt)","called","is called = heißt."],
+["Are you good ___ football? (in)","at","good at = gut in."],
+["You’re ___. (Du hast Recht.)","right","You’re right. = Du hast Recht."],
+["That’s a nice cat. What is ___ name? (sein)","its","Bei Tieren: its."],
+["I want ___ dance. (zu)","to","want to = etwas tun wollen.","Unit 2"],
+["I like you ___ you’re funny. (weil)","because","because = weil.","Unit 2"],
+["Buddy likes to run ___ the park. (um … herum)","around","around = um … herum.","Unit 2"],
+["Are you ___? Can we go? (bereit)","ready","ready = bereit.","Unit 2"],
+["Don’t ___ sit there. Come and help me. (einfach nur)","just","just = einfach nur.","Unit 2"],
+["Let’s play another game ___ you go. (bevor)","before","before = bevor.","Unit 2"],
+["Look at this ___ of Britain. (Landkarte)","map","map = Landkarte.","Unit 2"],
+["How ___ is Brighton from London? (weit)","far","far = weit.","Unit 2"],
+["On Saturdays, I always ___ sport. (treiben)","do","do sport = Sport treiben.","Unit 2"],
+["My mother gets ___ at 6 every morning. (auf)","up","get up = aufstehen.","Unit 2"],
+["Put your hand ___ if you know the answer. (hoch)","up","put your hand up = sich melden.","Unit 2"],
+["I like this bag and ___ pens. (diese)","these","these = diese (Mehrzahl).","Unit 2"],
+["Look, there’s Noah. Can you see ___? (ihn)","him","him = ihn.","Unit 2"],
+["He always speaks in a loud ___. (Stimme)","voice","voice = Stimme.","Unit 2"],
+["Some fish can ___ colour. (wechseln)","change","change = (ver)ändern.","Unit 2"],
+["Can I ___ my hands? (waschen)","wash","wash = waschen.","Unit 2"],
+["Dad ___ the house at 8 am every day. (verlässt)","leaves","leave → he/she/it leaves.","Unit 2"],
+["We ___ do sport on Saturdays. (oft)","often","often = oft.","Unit 2"],
+["My dog ___ at 6 pm. (frißt)","eats","eat → he/she/it eats.","Unit 2"],
+["I play football, and I play basketball ___. (auch)","too","too = auch.","Unit 2"],
+["At Varndean, a lesson is 50 minutes ___. (lang)","long","long = lang.","Unit 2"],
+["Try a sandwich. They’re really good. He always ___ to help his sister. (versucht)","tries","try → he/she/it tries.","Unit 2"],
+["Don’t leave your books on the desk ___ you go home. (wenn)","when","when = wenn.","Unit 2"],
+["You like basketball? ___ our basketball club! (Tritt … bei)","Join","join = beitreten.","Unit 3"],
+["The film was ___. I was bored. (langweilig)","boring","boring = langweilig.","Unit 3"],
+["My brother ___ takes our dog to the park. (nie)","never","never = nie.","Unit 3"],
+["Can you ___ that to me? (erklären)","explain","explain = erklären.","Unit 3"],
+["It’s ___ six o’clock. (fast)","almost","almost = fast.","Unit 3"],
+["We ___ to go now. (müssen)","have","have to = müssen.","Unit 3"],
+["Would you ___ to go shopping with me? (möchten)","like","Would you like …?","Unit 3"],
+["Dad doesn’t have ___ time for me. (viel)","much","much = viel (nicht zählbar).","Unit 3"],
+["I don’t have ___ friends, just a few. (viele)","many","many = viele (zählbar).","Unit 3"],
+["Can you ___ my bag, please? (halten)","hold","hold = halten.","Unit 3"],
+["___ you like basketball? (Magst du)","Do","Frage mit you: Do.","Unit 3"],
+["You don’t need to ___ off. (angeben)","show","show off = angeben.","Unit 3"],
+["Go ___! I don’t want to see you. (weg)","away","away = weg.","Unit 3"],
+["Mum, can I have €20? – No ___! (Auf keinen Fall)","way","No way! = Auf keinen Fall!","Unit 3"],
+["Are you ready? – No, not ___. (noch nicht)","yet","not yet = noch nicht.","Unit 3"],
+["I like ball games, tennis, ___ example. (zum)","for","for example = zum Beispiel.","Unit 3"],
+["Brighton is famous ___ its pier. (für)","for","famous for = berühmt für.","Unit 4"],
+["Take an umbrella, it’s ___. (regnerisch)","rainy","rainy = regnerisch.","Unit 4"],
+["Look ___ into the sky: there’s a seagull. (hoch)","up","look up = hochsehen.","Unit 4"],
+["When her baby is hungry, he ___. (weint)","cries","cry → he cries.","Unit 4"],
+["Our cat always ___ on the sofa. (schläft)","sleeps","sleep → it sleeps.","Unit 4"],
+["My dog always runs ___ other animals. (hinterher)","after","run after = hinterherrennen.","Unit 4"],
+["Slow ___, please! You speak so fast. (langsamer)","down","slow down = langsamer werden.","Unit 4"],
+["How ___ does it cost? (viel)","much","How much …? = Wie viel …?","Unit 4"],
+["Whose T-shirt is this? – It’s ___. (meins)","mine","mine = meins.","Unit 4"],
+["Let’s meet ___ the shop. (vor dem Laden)","outside","outside = außerhalb/draußen.","Unit 4"],
+["Be careful with that glass. Don’t ___ it. (zerbrechen)","break","break = zerbrechen.","Unit 4"],
+["She is very ___ and never scared. (mutig)","brave","brave = mutig.","Unit 4"],
+["Can I ___ you to help me? (bitten)","ask","ask sb. to do sth.","Unit 4"],
+["The door is ___. We can’t get out. (verschlossen)","locked","locked = verschlossen.","Unit 4"],
+["Don’t ___ your money on that toy! (verschwenden)","waste","waste = verschwenden.","Unit 4"],
+["I live in a nice ___. (Straße)","street","street = Straße."],
+["(I am) ___ eleven years old.","I'm|I am","I am → I’m."],
+["(she is) ___ a student.","She's|She is","she is → she’s."],
+["(they are) ___ friends.","They're|They are","they are → they’re."],
+["(we are) ___ at school.","We're|We are","we are → we’re."],
+["(it is) ___ orange.","It's|It is","it is → it’s."],
+["Scout is a parrot? No, she ___ a parrot. She’s a seagull. (ist nicht)","isn't|is not","she isn’t = she is not."],
+["Varndean is a school in Germany. – No, it ___.","isn't|is not","it isn’t."],
+["Alice and Lily are sisters. – No, they ___.","aren't|are not","they aren’t."],
+["Jake is downstairs. – No, he ___.","isn't|is not","he isn’t."],
+["No, you ___ a parrot. You’re a seagull. (bist nicht)","aren't|are not","you aren’t."],
+["A fish can swim, but it ___ fly. (kann nicht)","can't|cannot","can’t = cannot."],
+["Dogs can sit and they can ___. (rennen)","run","run = rennen."],
+["Seagulls ___ talk. (können nicht)","can't|cannot","can’t = cannot."],
+["I ___ talk. (kann)","can","can = können."],
+["I live in Brighton ___ my dad. (mit)","with","with = mit."],
+["Behind the house there is a big garden ___ trees. (mit)","with","with = mit."],
+["Now I’m in Year 7 ___ Varndean. (in)","at","at Varndean = in Varndean."],
+["There are a lot of photos ___ my room. (in)","in","in my room."],
+["Who ___ your favourite character?","is","Who + is."],
+["It ___ Noah. He can play the guitar.","is","it + is."],
+["___ Noah your favourite character too?","Is","Frage mit Noah (= he): Is."],
+["I ___ not sure. Maybe Zane is my favourite.","am","I am not = I’m not."],
+["How old ___ they? Can you remember?","are","they + are."],
+["Zane and Sunita ___ 11 years old.","are","Zane and Sunita = they → are."],
+["That ___ cool. We are 11 too.","is","that + is."],
+["She ___ in the book. (nicht)","isn't|is not","she isn’t."],
+["You ___ right. She is in the book. (nicht)","aren't|are not","you aren’t."],
+["There ___ a Lucy in the book. (nicht)","isn't|is not","there isn’t."],
+["Alice and Lily ___ my favourite characters. (nicht)","aren't|are not","they aren’t."],
+["I like ___ and bananas. (Kirschen)","cherries","cherry → cherries.","Weitere"],
+["A ___ is a yellow fruit. (Zitrone)","lemon","lemon = Zitrone.","Weitere"],
+["We eat ___ in summer. (Melone)","melon","melon = Melone.","Weitere"],
+["I eat ___ with my cereal. (Himbeeren)","raspberries","raspberry → raspberries.","Weitere"],
+["A ___ has a hard, brown shell. (Kokosnuss)","coconut","coconut = Kokosnuss.","Weitere"],
+["I peel the ___ and eat it. (Mandarine)","tangerine","tangerine = Mandarine.","Weitere"],
+["A ___ is a small, round, purple fruit. (Pflaume)","plum","plum = Pflaume.","Weitere"],
+["A ___ is green and sour. (Limette)","lime","lime = Limette.","Weitere"],
+["A squirrel eats ___. (Nüsse)","nuts","nut → nuts.","Weitere"],
+["___ butter is brown and tasty. (Erdnuss)","Peanut","peanut = Erdnuss.","Weitere"],
+["I like blue ___ on my pancakes. (Heidelbeeren)","blueberries","blueberry → blueberries.","Weitere"],
+["A ___ is a sweet fruit from a warm country. (Mango)","mango","mango = Mango.","Weitere"],
+["My cake has ___ in it. (Rosinen)","raisins","raisin → raisins.","Weitere"],
+["An apple has a few ___. (Kerne)","seeds","seed → seeds.","Weitere"],
+["You can eat an apple with the ___. (Schale)","peel","peel = Schale.","Weitere"],
+["French fries are made from ___. (Kartoffeln)","potatoes","potato → potatoes.","Weitere"],
+["When I cut an ___, I cry. (Zwiebel)","onion","onion = Zwiebel.","Weitere"],
+["___ is white and smells strong. (Knoblauch)","Garlic","garlic = Knoblauch.","Weitere"],
+["A ___ is long and green. (Gurke)","cucumber","cucumber = Gurke.","Weitere"],
+["___ is a big round green vegetable. (Kohl)","Cabbage","cabbage = Kohl.","Weitere"],
+["It looks like a small tree: ___. (Brokkoli)","broccoli","broccoli = Brokkoli.","Weitere"],
+["I have ___ on my pizza. (Pilze)","mushrooms","mushroom → mushrooms.","Weitere"],
+["At Halloween we make a face in a ___. (Kürbis)","pumpkin","pumpkin = Kürbis.","Weitere"],
+["___ is yellow. Chickens like it. (Mais)","Corn","corn = Mais.","Weitere"],
+["I like ___ and carrots. (Erbsen)","peas","peas = Erbsen.","Weitere"],
+["Popeye eats ___. (Spinat)","spinach","spinach = Spinat.","Weitere"],
+["I put ___ in the soup. (Kräuter)","herbs","herbs = Kräuter.","Weitere"],
+["A ___ is very hot! (Chili)","chilli|chili","chilli = Chili.","Weitere"],
+["I like ___ on my pizza. (Oliven)","olives","olive → olives.","Weitere"],
+["I eat ___ with a dip. (Sellerie)","celery","celery = Sellerie.","Weitere"],
+["Carrots and peas are ___. (Gemüse)","vegetables","vegetable → vegetables.","Weitere"],
+["A ___ gives us milk. (Kuh)","cow","cow = Kuh.","Weitere"],
+["A ___ lives on a farm and says oink. (Schwein)","pig","pig = Schwein.","Weitere"],
+["___ give us wool. (Schafe)","Sheep","sheep = Schaf/Schafe.","Weitere"],
+["A ___ can swim and fly. (Ente)","duck","duck = Ente.","Weitere"],
+["A ___ looks like a small horse with long ears. (Esel)","donkey","donkey = Esel.","Weitere"],
+["A ___ is orange and lives in the forest. (Fuchs)","fox","fox = Fuchs.","Weitere"],
+["A ___ sleeps in winter. (Bär)","bear","bear = Bär.","Weitere"],
+["An ___ is awake at night. (Eule)","owl","owl = Eule.","Weitere"],
+["The ___ is the king of the animals. (Löwe)","lion","lion = Löwe.","Weitere"],
+["An ___ has a very long nose. (Elefant)","elephant","elephant = Elefant.","Weitere"],
+["A ___ has a very long neck. (Giraffe)","giraffe","giraffe = Giraffe.","Weitere"],
+["A ___ lives where it is very cold. (Pinguin)","penguin","penguin = Pinguin.","Weitere"],
+["A ___ is a big fish with sharp teeth. (Hai)","shark","shark = Hai.","Weitere"],
+["A ___ is a very big animal in the sea. (Wal)","whale","whale = Wal.","Weitere"],
+["A ___ jumps and says quak. (Frosch)","frog","frog = Frosch.","Weitere"],
+["A ___ has colourful wings. (Schmetterling)","butterfly","butterfly = Schmetterling.","Weitere"],
+["A ___ is very slow. (Schnecke)","snail","snail = Schnecke.","Weitere"],
+["My dog wags its ___. (Schwanz)","tail","tail = Schwanz.","Weitere"],
+["A ___ is a baby cat. (Kätzchen)","kitten","kitten = Kätzchen.","Weitere"],
+["A ___ is a baby dog. (Welpe)","puppy","puppy = Welpe.","Weitere"],
+["We see lions at the ___. (Zoo)","zoo","zoo = Zoo.","Weitere"],
+["Cows and pigs live on a ___. (Bauernhof)","farm","farm = Bauernhof.","Weitere"],
+["A bird has two ___. (Flügel)","wings","wing → wings.","Weitere"],
+["It’s half past eight ___ Monday morning. (am)","on","on Monday morning = am Montagmorgen.","Unit 2"],
+["Hi, Sunita. You’re ___. (früh)","early","early = früh.","Unit 2"],
+["I ___ come early. (immer)","always","always = immer.","Unit 2"],
+["My mum ___ me to school every day. (bringt)","brings","bring → she brings.","Unit 2"],
+["I ___ to school with my brother. (gehe zu Fuß)","walk","walk = zu Fuß gehen.","Unit 2"],
+["We live ___ here, in Patcham. (in der Nähe)","near","near = in der Nähe.","Unit 2"],
+["Jake ___ rugby for the school. (spielt)","plays","play → he plays.","Unit 2"],
+["He ___ computers. (liebt)","loves","love → he loves.","Unit 2"],
+["Registration ___ soon. (beginnt)","starts","start → it starts.","Unit 2"],
+["You make a lot of ___. (Lärm)","noise","noise = Lärm.","Unit 2"],
+["Tim isn’t ___. (hier)","here","here = hier.","Unit 2"],
+["There are so ___ classrooms. (viele)","many","many = viele.","Unit 2"],
+["You can look ___ my map. (auf)","at","look at = anschauen.","Unit 2"],
+["I can ___ it to you later. (per E-Mail senden)","mail","mail = per E-Mail senden.","Unit 2"],
+["Can I take a ___ of your timetable? (Foto)","photo","photo = Foto.","Unit 2"],
+["We can’t use our phones ___ school. (in)","at","at school = in der Schule.","Unit 2"],
+["But I ___ find my timetable. (kann nicht)","can't|cannot","can’t = cannot.","Unit 2"],
+["I’m in a ___ now. (Eile)","hurry","be in a hurry = es eilig haben.","Unit 2"],
+["French starts in four ___. (Minuten)","minutes","minute → minutes.","Unit 2"],
+["I can tell you ___ French finishes. (wenn)","when","when = wenn.","Unit 2"],
+["I have a ___, Lily – a big secret. (Geheimnis)","secret","secret = Geheimnis.","Unit 2"],
+["___ down, please. (Setz dich)","Sit","Imperativ = Grundform des Verbs.","Unit 2"],
+["___ three sentences. (Schreibe)","Write","Befehl: Verb ohne Subjekt.","Unit 2"],
+["___ be late again. (Sei nicht)","Don't|Do not","Verneinter Befehl: Don’t + Verb.","Unit 2"],
+["Don’t ___. That isn’t cool. (lachen)","laugh","laugh = lachen.","Unit 2"],
+["___ your sentences to the class. (Lies … vor)","Read","Befehl: Read …","Unit 2"],
+["___ open your books on page 29. (Bitte)","Please","please = bitte.","Unit 2"],
+["___, I don’t know the answer. (Entschuldigung)","Sorry","sorry = Entschuldigung.","Unit 2"],
+["Be quiet, ___. (bitte)","please","please = bitte.","Unit 2"],
+["___ – that’s the right answer. (Danke)","Thank you|Thanks","thank you = danke.","Unit 2"],
+["Can you speak ___, please? (lauter)","louder","loud → louder.","Unit 2"],
+["Sorry, can you say that ___, please? (noch einmal)","again","again = noch einmal.","Unit 2"],
+["Sorry, can I open a ___, please? (Fenster)","window","window = Fenster.","Unit 2"],
+["Find a ___, please. (Partner)","partner","partner = Partner/in.","Unit 2"],
+["Sorry, I’m not ___. (fertig)","finished","finished = fertig.","Unit 2"],
+["Open evening is ___ November. (im)","in","Bei Monaten: in.","Unit 2"],
+["Open evening is ___ 12th November. (am)","on","Bei Daten: on.","Unit 2"],
+["Parents’ evening is on the 23rd ___ March. (von)","of","the 23rd of March.","Unit 2"],
+["The Summer Party is on the ___ of August. (1.)","first","1st = first.","Unit 2"],
+["Drama Day is on the second of ___. (02.10.)","October","10 = October.","Unit 2"],
+["The Swimming Challenge is on the ___ of June. (18.)","eighteenth","18th = eighteenth.","Unit 2"],
+["Library Day is on the ___ of July. (7.)","seventh","7th = seventh.","Unit 2"],
+["The hockey match is on the twelfth of ___. (11.)","November","11 = November.","Unit 2"],
+["Buchstabensalat, zwei Monate: Jamnuayary","January and May|May and January","January + May.","Unit 2"],
+["Buchstabensalat, zwei Monate: Dapecrilember","April and December|December and April","April + December.","Unit 2"],
+["Buchstabensalat, zwei Monate: Manrocvehmber","March and November|November and March","March + November.","Unit 2"],
+["Buchstabensalat, zwei Monate: Oltjucobery","July and October|October and July","July + October.","Unit 2"],
+["Buchstabensalat, zwei Monate: Sejuptemenerb","June and September|September and June","June + September.","Unit 2"],
+["Buchstabensalat, zwei Monate: Faesgrutuabruy","February and August|August and February","February + August.","Unit 2"],
+["One library, two ___.","libraries","Konsonant + y → ies.","Unit 2"],
+["One class, two ___.","classes","Nach -s: -es.","Unit 2"],
+["One baby, two ___.","babies","Konsonant + y → ies.","Unit 2"],
+["One boy, two ___.","boys","Vokal + y: nur -s.","Unit 2"],
+["One child, two ___.","children","Unregelmäßiger Plural.","Unit 2"],
+["One sandwich, two ___.","sandwiches","Nach -ch: -es.","Unit 2"],
+["One story, two ___.","stories","Konsonant + y → ies.","Unit 2"],
+["One Monday, two ___.","Mondays","Vokal + y: nur -s.","Unit 2"],
+["Every night at six o’clock, I ___ Buddy his dinner. (give)","give","Bei I kein -s.","Unit 2"],
+["He ___ all his food in five minutes! (finish)","finishes","he → finishes.","Unit 2"],
+["Buddy ___ next to me and listens. (sit)","sits","Buddy = he → sits.","Unit 2"],
+["My mum ___ Buddy to the park. (take)","takes","my mum = she → takes.","Unit 2"],
+["We ___ find them again. (nicht finden)","don't|do not","we don’t find.","Unit 2"],
+["My dad ___ a new ball every month. (buy)","buys","he → buys.","Unit 2"],
+["Noah’s dog ___ live in a tree. (nicht)","doesn't|does not","he doesn’t live.","Unit 2"],
+["Zane’s cat doesn’t eat salad. It eats cat ___. (Futter)","food","food = Futter.","Unit 2"],
+["Rabbits don’t hang out with dogs. They hang out with other ___.","rabbits","rabbit → rabbits.","Unit 2"],
+["Fish don’t like running. They like ___. (schwimmen)","swimming","like + Verb-ing.","Unit 2"],
+["A dog doesn’t say „meow“. It says „___“.","woof","woof = wau.","Unit 2"],
+["Guinea pigs don’t look scary. They look ___. (niedlich)","cute","cute = niedlich.","Unit 2"],
+["Sunita ___ goes to her grandma’s house. (oft)","often","often = oft.","Unit 3"],
+["Noah ___ plays computer games. (nie)","never","never = nie.","Unit 3"],
+["Alice ___ has hockey practice on Saturdays. (immer)","always","always = immer.","Unit 3"],
+["Zane ___ plays rugby in the park. (normalerweise)","usually","usually = normalerweise.","Unit 3"],
+["Lily ___ watches TV in the morning. (manchmal)","sometimes","sometimes = manchmal.","Unit 3"],
+["I ___ yoga after school. (mache)","do","do yoga.","Unit 3"],
+["We ___ swimming on Saturdays. (gehen)","go","go swimming.","Unit 3"],
+["___ you like computers? (Magst du)","Do","Frage mit you: Do.","Unit 3"],
+["___ Zane like cooking? (Mag)","Does","Frage mit Zane (= he): Does.","Unit 3"],
+["Sorry, swimming really isn’t my ___. (Ding)","thing","not my thing = nicht mein Fall.","Unit 3"],
+["I don’t ___ like it. (wirklich)","really","really = wirklich.","Unit 3"],
+["I ___ stand it. (kann nicht)","can't|cannot","I can’t stand it = unhöflich.","Unit 3"],
+["Tennis is my ___ sport. (Lieblings-)","favourite|favorite","favourite = Lieblings-.","Unit 3"],
+["Can I ___ you some questions, please? (fragen)","ask","ask = fragen.","Unit 3"],
+["OK, that’s ___. (alles)","all","that’s all = das ist alles.","Unit 3"],
+["You’re ___. (Gern geschehen)","welcome","You’re welcome.","Unit 3"],
+["I’d like ___ have a big birthday party. (zu)","to","I’d like to + Verb.","Unit 3"],
+["I ___ to buy a lot of food. (muss)","have","have to = müssen.","Unit 3"],
+["Would you like to come ___ my birthday party? (zu)","to","come to.","Unit 3"],
+["Sorry, I can’t come. I have to do my ___. (Hausaufgaben)","homework","homework = Hausaufgaben.","Unit 3"],
+["___ the cake for 50 minutes at 180°C. (Backe)","Bake","bake = backen.","Unit 3"],
+["Take out the cake and let it ___ for 20 minutes. (stehen)","stand","stand = stehen.","Unit 3"],
+["___ four apples into small pieces. (Schneide)","Cut","cut = schneiden.","Unit 3"],
+["Put the pieces on a baking ___. (Blech)","tray","tray = Blech/Tablett.","Unit 3"],
+["Then ___ in the flour and the carrot pieces. (mische)","mix","mix = mischen.","Unit 3"],
+["First ___ the butter and sugar until they’re creamy. (schlage)","beat","beat = schlagen.","Unit 3"],
+["He doesn’t eat ___ vegetables. (viele)","many","many + Mehrzahl.","Unit 3"],
+["Noah likes pizza with ___ salami. (viel)","a lot of","a lot of = viel.","Unit 3"],
+["Mum and Dad ___ (work) this morning.","are working","be + Verb-ing.","Unit 4"],
+["So I ___ (watch) TV alone.","am watching|'m watching","I + am + -ing.","Unit 4"],
+["We ___ (play) rugby in the garden.","are playing|'re playing","we + are + -ing.","Unit 4"],
+["I ___ (teach) her the rules.","am teaching|'m teaching","teach → teaching.","Unit 4"],
+["Alice ___ (stay) at home today.","is staying|'s staying","is + -ing.","Unit 4"],
+["She ___ (cry) about her robot.","is crying|'s crying","cry → crying.","Unit 4"],
+["I think he ___ (visit) Alice today.","is visiting|'s visiting","visit → visiting.","Unit 4"],
+["Maybe they ___ (build) a new robot.","are building|'re building","build → building.","Unit 4"],
+["No, he ___. He’s wearing a Patcham High Uniform.","isn't|is not","Kurzantwort mit isn’t.","Unit 4"],
+["No, they ___. They’re playing rounders.","aren't|are not","Kurzantwort mit aren’t.","Unit 4"],
+["Yes, I ___. I’m having a lot of fun.","am","Yes, I am.","Unit 4"],
+["Yes, it ___. Look – our bus is coming now.","is","Yes, it is.","Unit 4"],
+["Buchstabensalat (Wetter): yidwn","windy","windy = windig.","Unit 4"],
+["Buchstabensalat (Wetter): nirya","rainy","rainy = regnerisch.","Unit 4"],
+["Buchstabensalat (Wetter): olducy","cloudy","cloudy = bewölkt.","Unit 4"],
+["Buchstabensalat (Wetter): mosryt","stormy","stormy = stürmisch.","Unit 4"],
+["Buchstabensalat (Wetter): nysnu","sunny","sunny = sonnig.","Unit 4"],
+["Buchstabensalat (Wetter): wosyn","snowy","snowy = verschneit.","Unit 4"],
+["Hi, Fatih. What ___ you doing today?","are","are + you + -ing.","Unit 4"],
+["I’m ___ my mum in the kitchen. (help)","helping","help → helping.","Unit 4"],
+["We usually ___ lunch at 1 pm on Sundays. (have)","have","usually → simple present.","Unit 4"],
+["We always ___ late at weekends. (sleep)","sleep","always → simple present.","Unit 4"],
+["Mum ___ something with vegetables now. (cook)","is cooking|'s cooking","now → progressive.","Unit 4"],
+["I’m ___ them for her. (wash)","washing","wash → washing.","Unit 4"],
+["My mum usually ___ lunch on Sundays. (cook)","cooks","usually → simple present.","Unit 4"],
+["She sometimes ___ fish and chips. (buy)","buys","sometimes → simple present.","Unit 4"],
+["I like ___ days. They’re great for a picnic. (sonnige)","sunny","sunny = sonnig.","Unit 4"],
+["Hi, Mr Jackson. ___ to meet you. (Freut mich)","Nice","Nice to meet you."],
+["See you at ___ on Monday, Tony. (Schule)","school","school = Schule."],
+["Wow, Maria. Your ___ is cool. (Haus)","house","house = Haus."],
+["How are ___, Mrs Shaw?","you","How are you?"],
+["I really ___ your room. (mag)","like","like = mögen."],
+["This is your guitar? That’s ___! (cool)","cool","cool = cool."],
+["You have a big TV. ___ you! (Glückspilz)","Lucky","Lucky you! = Du Glückspilz!"],
+["I like your house. It’s ___ nice. (wirklich)","really","really = wirklich."],
+["Registration ___ at 8:45. (start)","starts","it → starts.","Unit 2"],
+["The students ___ at their desks. (sit down)","sit down","they → sit down.","Unit 2"],
+["Mr Lee ___ all the students’ names. (say)","says","he → says.","Unit 2"],
+["Then they ___ to a new classroom for French. (walk)","walk","they → walk.","Unit 2"],
+["Madame Dupont ___ the 7L students French songs. (teach)","teaches","she → teaches.","Unit 2"],
+["At 12:45 they ___ their lunch in the canteen. (eat)","eat","they → eat.","Unit 2"],
+["Some students ___ football on the fields. (play)","play","some students = they.","Unit 2"],
+["Noah ___ his homework in the library. (do)","does","he → does.","Unit 2"],
+["Sunita ___ the computers to make cool pictures. (use)","uses","she → uses.","Unit 2"],
+["School ___ at 2:55. (finish)","finishes","it → finishes.","Unit 2"],
+["Zeit aus Silben: rt · st · pa · fi · er · ve · qua","quarter past five","quarter past five = 5:15.","Unit 2"],
+["Zeit aus Silben: ur · ha · st · fo · lf · pa","half past four","half past four = 4:30.","Unit 2"],
+["Zeit aus Silben: k · o · gh · ei · t · oc · cl","eight o'clock","eight o’clock = 8 Uhr.","Unit 2"],
+["Zeit aus Silben: tw · st · fi · en · pa · ve · ni · ne · ty","twenty-five past nine|twenty five past nine","twenty-five past nine = 9:25.","Unit 2"],
+["Zeit aus Silben: en · n · to · te · el · ev","ten to eleven","ten to eleven = 10:50.","Unit 2"],
+["Zeit aus Silben: tw · se · ven · en · ve · ty · fi · to","twenty-five to seven|twenty five to seven","twenty-five to seven = 6:35.","Unit 2"],
+["My school starts ___ 8:45 every day. (um)","at","at + Uhrzeit.","Unit 2"],
+["We have registration every morning ___ the first lesson. (vor)","before","before = vor.","Unit 2"],
+["There are special ___ for ICT and other subjects. (Räume)","rooms","room → rooms.","Unit 2"],
+["There’s a break from 10:45 ___ twenty minutes. (für)","for","for twenty minutes = zwanzig Minuten lang.","Unit 2"],
+["We have six ___ every day. (Stunden)","lessons","lesson → lessons.","Unit 2"],
+["I do my homework in the ___ before dinner. (Abend)","evening","in the evening = abends.","Unit 2"],
+["___ me in the park at 6 pm and don’t be late. (Triff)","Meet","Befehl: Meet …","Unit 2"],
+["Meet me in the park at 6 pm and ___ be late.","don't|do not","Verneinter Befehl: Don’t + Verb.","Unit 2"],
+["___ your homework. Read this text. (Vergiss nicht)","Don't forget|Do not forget","Don’t forget …","Unit 2"],
+["It’s a nice day. ___ outside and play. (Geh)","Go","Befehl: Go …","Unit 2"],
+["Put your hand up but ___ say the answer.","don't|do not","Verneinter Befehl: Don’t + Verb.","Unit 2"],
+["___ eat in the classroom, please. Go to the canteen.","Don't|Do not","Verneinter Befehl: Don’t + Verb.","Unit 2"],
+["On Saturday I ___ yoga in the morning. (do/go/play)","do","do yoga.","Unit 3"],
+["Then I ___ swimming with friends. (do/go/play)","go","go swimming.","Unit 3"],
+["Sometimes I ___ rugby too. (do/go/play)","play","play rugby.","Unit 3"],
+["Most days I ___ the piano. (do/go/play)","play","play the piano.","Unit 3"],
+["In the winter I also ___ skating. (do/go/play)","go","go skating.","Unit 3"],
+["After school I ___ yoga to relax. (do/go/play)","do","do yoga.","Unit 3"],
+["At weekends I ___ football with my friends. (do/go/play)","play","play football.","Unit 3"],
+["I ___ swimming before school. (do/go/play)","go","go swimming.","Unit 3"],
+["I don’t ___ PE. I hate it! (do/go/play)","do","do PE.","Unit 3"],
+["I ___ chess after school most days. (do/go/play)","play","play chess.","Unit 3"],
+["Buchstabensalat: retag","great","great = großartig.","Unit 3"],
+["Buchstabensalat: elki","like","like = mögen.","Unit 3"],
+["Buchstabensalat: gniht","thing","thing = Ding.","Unit 3"],
+["Buchstabensalat: ringbo","boring","boring = langweilig.","Unit 3"],
+["Buchstabensalat: aryell","really","really = wirklich.","Unit 3"],
+["Buchstabensalat: ahet","hate","hate = hassen.","Unit 3"],
+["Lebensmittel aus Silben: ma · to · ap · pa · to","tomato","tomato = Tomate.","Unit 3"],
+["Lebensmittel aus Silben: rr · to · ot · to · ca","carrot","carrot = Karotte.","Unit 3"],
+["Lebensmittel aus Silben: le · nea · pa · pi · pp","pineapple","pineapple = Ananas.","Unit 3"],
+["Lebensmittel aus Silben: le · ace · uce · ot · tt","lettuce","lettuce = Kopfsalat.","Unit 3"],
+["Lebensmittel aus Silben: nea · ead · ean · br · pa","bread","bread = Brot.","Unit 3"],
+["Lebensmittel aus Silben: ch · ee · te · oco · la","chocolate","chocolate = Schokolade.","Unit 3"],
+["Lebensmittel aus Silben: ch · ee · oco · la · se","cheese","cheese = Käse.","Unit 3"],
+["Lebensmittel aus Silben: cu · bu · bis · tt · it","biscuit","biscuit = Keks.","Unit 3"],
+["Lebensmittel aus Silben: cu · bu · er · bis · tt","butter","butter = Butter.","Unit 3"]
+];
+// [Deutsch, [richtige Lösungen]]
+const TR=[
+["Ich bin zehn Jahre alt.",["I am ten years old","I'm ten years old"]],
+["Sie ist meine Freundin.",["She is my friend","She's my friend"]],
+["Wir haben einen Hund.",["We have got a dog","We have a dog"]],
+["Er hat zwei Brüder.",["He has got two brothers","He has two brothers"]],
+["Mein Bruder spielt Fußball.",["My brother plays football","My brother plays soccer"]],
+["Ich mag Äpfel.",["I like apples"]],
+["Wie heißt du?",["What is your name","What's your name","What are you called"]],
+["Woher kommst du?",["Where are you from","Where do you come from"]],
+["Das ist unsere Schule.",["This is our school","That is our school","That's our school"]],
+["Sie hat eine Katze.",["She has got a cat","She has a cat"]],
+["Hast du einen Stift?",["Have you got a pen","Do you have a pen"]],
+["Er mag keinen Fisch.",["He does not like fish","He doesn't like fish"]],
+["Wir haben heute Englisch.",["We have English today"]],
+["Meine Eltern sind nett.",["My parents are nice","My parents are kind"]],
+["Ich gehe mit dem Fahrrad zur Schule.",["I go to school by bike","I go by bike to school"]],
+["Sie trinkt Milch.",["She drinks milk"]],
+["Er spielt nicht Fußball.",["He does not play football","He doesn't play football","He does not play soccer","He doesn't play soccer"]],
+["Wo ist mein Stift?",["Where is my pen","Where's my pen"]],
+["Wie alt ist deine Schwester?",["How old is your sister"]],
+["Das ist nicht mein Buch.",["This is not my book","This isn't my book","That is not my book","That isn't my book","That's not my book"]],
+["Hat dein Bruder ein Fahrrad?",["Has your brother got a bike","Does your brother have a bike"]],
+["Wir sind nicht müde.",["We are not tired","We aren't tired","We're not tired"]],
+["Meine Oma wohnt in Köln.",["My grandma lives in Cologne","My grandmother lives in Cologne"]],
+["Ich habe keinen Hund.",["I haven't got a dog","I have not got a dog","I don't have a dog","I do not have a dog"]],
+["Lass uns nach Hause gehen.",["Let's go home","Let us go home"]],
+["Jeder weiß, dass London in England liegt.",["Everyone knows that London is in England"]],
+["Es ist in der Schulstraße 8.",["It's at 8 School Street","It is at 8 School Street"]],
+["Kannst du uns sehen?",["Can you see us"]],
+["Lass mich dir Brighton zeigen.",["Let me show you Brighton"]],
+["Ich mag Scout. Sie ist so cool.",["I like Scout She's so cool","I like Scout She is so cool"]],
+["Sonntags haben wir keine Schule.",["There's no school on Sundays","There is no school on Sundays","We don't have school on Sundays","We have no school on Sundays"]],
+["Lass uns heute einen Film anschauen.",["Let's watch a film today","Let us watch a film today"]],
+["Mein Papa heißt Tim.",["My dad is called Tim","My dad's name is Tim","My dad is named Tim"]],
+["Hier sind einige Sandwiches für dich.",["Here are some sandwiches for you"]],
+["Die Katze ist vor dem Hund.",["The cat is in front of the dog"]],
+["Der Hund ist hinter der Katze.",["The dog is behind the cat"]],
+["Es gibt zwei Katzen in meinem Garten.",["There are two cats in my garden"]],
+["Gibt es Katzen in deinem Garten?",["Are there any cats in your garden"]],
+["Nein, es gibt keine Katzen in meinem Garten.",["No there aren't any cats in my garden","No there are not any cats in my garden","No there are no cats in my garden"]],
+["Ich wohne in einer Wohnung, nicht in einem Haus.",["I live in a flat not in a house","I live in a flat not a house"]],
+["Ich kann kein Französisch sprechen.",["I can't speak French","I cannot speak French"]],
+["Unser Mathelehrer ist wirklich nett.",["Our maths teacher is really nice","Our math teacher is really nice"]],
+["Schau dir das Bild auf Seite 28 an.",["Look at the picture on page 28"]],
+["Wie lautet deine Adresse?",["What is your address","What's your address"]],
+["Du hast Recht.",["You're right","You are right"]],
+["Ich habe Spaß, wenn ich Filme anschaue.",["I have fun when I watch films"]],
+["Er ist gut in Fußball.",["He is good at football","He's good at football"]],
+["Sei bitte leise.",["Be quiet please","Please be quiet"]],
+["Wir lernen Englisch mit Herrn Black.",["We learn English with Mr Black"]],
+["Ich mag Hunde. Und du?",["I like dogs What about you"]],
+["Ich will tanzen.",["I want to dance"],"Unit 2"],
+["Ich mag dich, weil du lustig bist.",["I like you because you're funny","I like you because you are funny"],"Unit 2"],
+["Meine Mutter steht jeden Morgen um 6 Uhr auf.",["My mother gets up at 6 every morning","My mother gets up at six every morning"],"Unit 2"],
+["Wie weit ist Brighton von London entfernt?",["How far is Brighton from London"],"Unit 2"],
+["Samstags treibe ich immer Sport.",["On Saturdays I always do sport","I always do sport on Saturdays"],"Unit 2"],
+["Bist du bereit? Können wir gehen?",["Are you ready Can we go"],"Unit 2"],
+["Kannst du ihn sehen?",["Can you see him"],"Unit 2"],
+["Ich mag diese Tasche und diese Stifte.",["I like this bag and these pens"],"Unit 2"],
+["Hebe die Hand, wenn du die Antwort weißt.",["Put your hand up if you know the answer","Put your hand up when you know the answer"],"Unit 2"],
+["Wann ist die Mittagspause an deiner Schule?",["When is the lunch break at your school"],"Unit 2"],
+["Ich treffe meine Freunde in der Pause.",["I meet my friends at break"],"Unit 2"],
+["Mein Hund frisst um 18 Uhr.",["My dog eats at 6 pm","My dog eats at six pm"],"Unit 2"],
+["Papa verlässt jeden Tag um 8 Uhr das Haus.",["Dad leaves the house at 8 am every day","Dad leaves the house every day at 8 am"],"Unit 2"],
+["Die meisten Kinder mögen Hamster.",["Most children like hamsters"],"Unit 2"],
+["Wir treiben oft Sport am Samstag.",["We often do sport on Saturdays","We often do sport on Saturday"],"Unit 2"],
+["Tritt unserem Basketballclub bei!",["Join our basketball club"],"Unit 3"],
+["Der Film war langweilig.",["The film was boring"],"Unit 3"],
+["Mein Bruder nimmt unseren Hund nie mit in den Park.",["My brother never takes our dog to the park"],"Unit 3"],
+["Wir müssen jetzt gehen.",["We have to go now"],"Unit 3"],
+["Möchtest du mit mir einkaufen gehen?",["Would you like to go shopping with me"],"Unit 3"],
+["Papa hat nicht viel Zeit für mich.",["Dad doesn't have much time for me","Dad does not have much time for me"],"Unit 3"],
+["Ich habe nicht viele Freunde, nur ein paar.",["I don't have many friends just a few","I do not have many friends just a few"],"Unit 3"],
+["Kannst du mir das erklären?",["Can you explain that to me"],"Unit 3"],
+["Es ist fast sechs Uhr.",["It's almost six","It is almost six"],"Unit 3"],
+["Ich hasse Schach.",["I hate chess"],"Unit 3"],
+["Brighton ist berühmt für seinen Pier.",["Brighton is famous for its pier"],"Unit 4"],
+["Es regnet und es ist windig.",["It's raining and it's windy","It is raining and it is windy"],"Unit 4"],
+["Wie viel kostet dieser Pullover?",["How much does this pullover cost","How much does the pullover cost"],"Unit 4"],
+["Mein Hund rennt immer anderen Tieren hinterher.",["My dog always runs after other animals"],"Unit 4"],
+["Wem gehört dieses T-Shirt?",["Whose T-shirt is this","Whose T-shirt is it"],"Unit 4"],
+["Sei vorsichtig mit diesem Glas. Zerbrich es nicht.",["Be careful with this glass Don't break it","Be careful with that glass Don't break it"],"Unit 4"],
+["Unsere Katze schläft immer auf dem Sofa.",["Our cat always sleeps on the sofa"],"Unit 4"],
+["Verschwende dein Geld nicht für dieses Spielzeug!",["Don't waste your money on that toy","Do not waste your money on that toy"],"Unit 4"],
+["Wir haben einen tollen Blick auf die Stadt.",["We have a great view of the city"],"Unit 4"],
+["Kann ich dich bitten, mir zu helfen?",["Can I ask you to help me"],"Unit 4"],
+["Wir haben eine große Wohnung.",["We have a big flat","We have a large flat"]],
+["Unser Wohnzimmer ist sehr ordentlich.",["Our living room is very tidy"]],
+["Das Sofa ist neu.",["The sofa is new"]],
+["Es gibt einen kleinen Garten.",["There is a small garden"]],
+["Es gibt auch blaue Blumen.",["There are blue flowers too"]],
+["Fische können schwimmen, aber nicht fliegen.",["Fish can swim but they can't fly","Fish can swim but they cannot fly","Fishes can swim but they can't fly"]],
+["Ein Papagei kann sprechen.",["A parrot can talk","Parrots can talk"]],
+["Seemöwen können nicht sprechen.",["Seagulls can't talk","Seagulls cannot talk"]],
+["Unser Zuhause ist in einer schönen Straße.",["Our home is in a nice street"]],
+["Jetzt bin ich in Klasse 7 in Varndean.",["Now I'm in Year 7 at Varndean","Now I am in Year 7 at Varndean"]],
+["Es gibt viele Fotos in meinem Zimmer.",["There are a lot of photos in my room","There are lots of photos in my room"]],
+["Hinter dem Haus ist ein großer Garten mit Bäumen.",["Behind the house is a big garden with trees","Behind the house there is a big garden with trees"]],
+["Sie ist nicht hier.",["She isn't here","She is not here"]],
+["Ich mag Kirschen.",["I like cherries"],"Weitere"],
+["Eine Zitrone ist gelb.",["A lemon is yellow"],"Weitere"],
+["Meine Mutter kauft Pfirsiche.",["My mum buys peaches","My mother buys peaches"],"Weitere"],
+["Die Melone ist süß.",["The melon is sweet"],"Weitere"],
+["Ich esse eine Mandarine.",["I eat a tangerine","I am eating a tangerine","I'm eating a tangerine"],"Weitere"],
+["Er mag keine Nüsse.",["He doesn't like nuts","He does not like nuts"],"Weitere"],
+["Eine Kokosnuss ist hart.",["A coconut is hard"],"Weitere"],
+["Magst du Heidelbeeren?",["Do you like blueberries"],"Weitere"],
+["Die Beeren sind rot.",["The berries are red"],"Weitere"],
+["Ich mag Kartoffeln.",["I like potatoes"],"Weitere"],
+["Die Gurke ist grün.",["The cucumber is green"],"Weitere"],
+["Wir essen Erbsen und Mais.",["We eat peas and corn"],"Weitere"],
+["Mein Bruder mag keinen Brokkoli.",["My brother doesn't like broccoli","My brother does not like broccoli"],"Weitere"],
+["Der Kürbis ist groß.",["The pumpkin is big","The pumpkin is large"],"Weitere"],
+["Die Kräuter sind im Garten.",["The herbs are in the garden"],"Weitere"],
+["Die Chili ist heiß.",["The chilli is hot","The chili is hot"],"Weitere"],
+["Ich esse gern Pilze.",["I like mushrooms","I like eating mushrooms"],"Weitere"],
+["Die Kuh ist auf dem Bauernhof.",["The cow is on the farm"],"Weitere"],
+["Das Schwein ist rosa.",["The pig is pink"],"Weitere"],
+["Das Schaf ist im Garten.",["The sheep is in the garden"],"Weitere"],
+["Der Fuchs ist schnell.",["The fox is fast","The fox is quick"],"Weitere"],
+["Der Bär schläft im Winter.",["The bear sleeps in winter"],"Weitere"],
+["Der Elefant ist sehr groß.",["The elephant is very big","The elephant is very large"],"Weitere"],
+["Ich sehe einen Löwen im Zoo.",["I see a lion at the zoo","I can see a lion at the zoo","I see a lion in the zoo"],"Weitere"],
+["Der Pinguin kann nicht fliegen.",["The penguin can't fly","The penguin cannot fly"],"Weitere"],
+["Ein Frosch kann schwimmen.",["A frog can swim","Frogs can swim"],"Weitere"],
+["Der Hai ist ein Fisch.",["The shark is a fish","A shark is a fish"],"Weitere"],
+["Das Kätzchen schläft.",["The kitten is sleeping","The kitten sleeps"],"Weitere"],
+["Der Welpe spielt im Garten.",["The puppy is playing in the garden","The puppy plays in the garden"],"Weitere"],
+["Das Pferd isst Äpfel.",["The horse eats apples","The horse is eating apples"],"Weitere"],
+["Meine Katze hat einen langen Schwanz.",["My cat has a long tail","My cat has got a long tail"],"Weitere"],
+["Wir sehen Elefanten im Zoo.",["We see elephants at the zoo","We can see elephants at the zoo","We see elephants in the zoo"],"Weitere"],
+["Der Vogel hat zwei Flügel.",["The bird has two wings","The bird has got two wings"],"Weitere"],
+["Der Schmetterling ist schön.",["The butterfly is beautiful","The butterfly is nice","The butterfly is pretty"],"Weitere"],
+["Die Ente kann schwimmen.",["The duck can swim","A duck can swim","Ducks can swim"],"Weitere"],
+["Die Schnecke ist langsam.",["The snail is slow"],"Weitere"],
+["Hasen mögen Karotten.",["Rabbits like carrots","Hares like carrots"],"Weitere"],
+["Die Kuh gibt Milch.",["The cow gives milk","Cows give milk","A cow gives milk"],"Weitere"],
+["Es ist halb neun am Montagmorgen.",["It's half past eight on Monday morning","It is half past eight on Monday morning"],"Unit 2"],
+["Du bist früh.",["You're early","You are early"],"Unit 2"],
+["Ich komme immer früh.",["I always come early"],"Unit 2"],
+["Meine Mutter bringt mich jeden Tag zur Schule.",["My mum brings me to school every day","My mum takes me to school every day","My mother brings me to school every day","My mother takes me to school every day"],"Unit 2"],
+["Ich gehe mit meinem Bruder zur Schule.",["I walk to school with my brother"],"Unit 2"],
+["Jake spielt Rugby für die Schule.",["Jake plays rugby for the school"],"Unit 2"],
+["Er liebt Computer.",["He loves computers"],"Unit 2"],
+["Die Anmeldung beginnt bald.",["Registration starts soon"],"Unit 2"],
+["Ihr macht viel Lärm.",["You make a lot of noise"],"Unit 2"],
+["Er ist nicht hier.",["He isn't here","He is not here"],"Unit 2"],
+["Diese Schule ist groß!",["This school is big","This school is large"],"Unit 2"],
+["Es gibt so viele Klassenzimmer.",["There are so many classrooms"],"Unit 2"],
+["Du kannst auf meine Karte schauen.",["You can look at my map"],"Unit 2"],
+["Wir können unsere Handys in der Schule nicht benutzen.",["We can't use our phones at school","We cannot use our phones at school"],"Unit 2"],
+["Ich kann meinen Stundenplan nicht finden.",["I can't find my timetable","I cannot find my timetable"],"Unit 2"],
+["Französisch beginnt in vier Minuten.",["French starts in four minutes"],"Unit 2"],
+["Ich habe ein Geheimnis.",["I have a secret"],"Unit 2"],
+["Entschuldigung, ich bin zu spät.",["Sorry I'm late","Sorry I am late"],"Unit 2"],
+["Bitte komm nicht wieder zu spät.",["Please don't be late again","Please do not be late again"],"Unit 2"],
+["Kannst du bitte lauter sprechen?",["Can you speak louder please"],"Unit 2"],
+["Kannst du das bitte noch einmal sagen?",["Can you say that again please"],"Unit 2"],
+["Entschuldigung, darf ich ein Fenster öffnen?",["Sorry can I open a window please","Sorry can I open a window"],"Unit 2"],
+["Iss nicht im Klassenzimmer.",["Don't eat in the classroom","Do not eat in the classroom"],"Unit 2"],
+["Sei freundlich zu deinen Mitschülern.",["Be friendly to your classmates"],"Unit 2"],
+["Mach deine Hausaufgaben.",["Do your homework"],"Unit 2"],
+["Noahs Hund wohnt nicht in einem Baum.",["Noah's dog doesn't live in a tree","Noah's dog does not live in a tree"],"Unit 2"],
+["Fische mögen kein Rennen.",["Fish don't like running","Fish do not like running"],"Unit 2"],
+["Am 23. März ist Elternabend.",["Parents' evening is on the 23rd of March","Parents' evening is on 23rd March","Parents' evening is on the twenty-third of March"],"Unit 2"],
+["Magst du die Bibliothek?",["Do you like the library"],"Unit 3"],
+["Mag Lily Hugo?",["Does Lily like Hugo"],"Unit 3"],
+["Kommst du oft hierher?",["Do you often come here"],"Unit 3"],
+["Spricht er mit dir?",["Does he talk to you"],"Unit 3"],
+["Sunita geht oft zum Haus ihrer Oma.",["Sunita often goes to her grandma's house"],"Unit 3"],
+["Noah spielt nie Computerspiele.",["Noah never plays computer games"],"Unit 3"],
+["Warum magst du Rugby?",["Why do you like rugby"],"Unit 3"],
+["Wo übst du?",["Where do you practise","Where do you practice"],"Unit 3"],
+["Ich möchte eine große Geburtstagsparty feiern.",["I'd like to have a big birthday party","I would like to have a big birthday party"],"Unit 3"],
+["Ich muss viel Essen kaufen.",["I have to buy a lot of food"],"Unit 3"],
+["Entschuldigung, Schwimmen ist wirklich nicht mein Ding.",["Sorry swimming really isn't my thing"],"Unit 3"],
+["Mama und Papa arbeiten heute Morgen.",["Mum and Dad are working this morning"],"Unit 4"],
+["Ich sehe allein fern.",["I'm watching TV alone","I am watching TV alone"],"Unit 4"],
+["Alice weint wegen ihres Roboters.",["Alice is crying about her robot"],"Unit 4"],
+["Schaust du den Film an?",["Are you watching the film"],"Unit 4"],
+["Schneit es draußen?",["Is it snowing outside"],"Unit 4"],
+["Machst du Fotos von mir?",["Are you taking photos of me","Are you taking pictures of me"],"Unit 4"],
+["Schlafen die Kinder oben?",["Are the kids sleeping upstairs","Are the children sleeping upstairs"],"Unit 4"],
+["Was passiert hier?",["What is happening","What's happening","What is happening here","What's happening here"],"Unit 4"]
+];
+const $=s=>document.querySelector(s);
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const sh=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const K="etm-mia-v1";let S=null,Q=null,V={dir:"ed",unit:"all",w:null,res:null,last:0};
+function seed(){return {pts:0,st:{},words:SEED.split(";").map((p,i)=>{const[e,d]=p.split("=");return{id:i+1,en:e,de:d,unit:"Start",box:0,ok:0,bad:0}})}}
+try{S=JSON.parse(localStorage.getItem(K))}catch(e){}
+if(!S||!Array.isArray(S.words))S=seed();
+if(!S.v){SEED2.split(";").forEach((p,i)=>{const[e,d,u]=p.split("=");if(!S.words.some(w=>w.en.toLowerCase()==e.toLowerCase()))S.words.push({id:1000+i,en:e,de:d,unit:u,box:0,ok:0,bad:0})});S.v=2;save()}
+if(S.v<3){SEED3.split(";").forEach((p,i)=>{const[e,d]=p.split("=");const x=S.words.find(w=>w.en.toLowerCase()==e.toLowerCase());if(x){x.unit="Unit 1";x.de=d}else S.words.push({id:2000+i,en:e,de:d,unit:"Unit 1",box:0,ok:0,bad:0})});S.v=3;save()}
+if(!S.sel)S.sel=["Unit 1"];
+if(S.v<4){SEED4.split(";").forEach((p,i)=>{const[e,d,u]=p.split("=");const x=S.words.find(w=>w.en.toLowerCase()==e.toLowerCase());if(!x)S.words.push({id:3000+i,en:e,de:d,unit:u||"Unit 2",box:0,ok:0,bad:0});else if(!/^Unit \d$/.test(x.unit)){x.unit=u||"Unit 2";x.de=d}});S.v=4;save()}
+if(S.v<5){SEED5.split(";").forEach((p,i)=>{const[e,d]=p.split("=");if(!S.words.some(w=>w.en.toLowerCase()==e.toLowerCase()))S.words.push({id:4000+i,en:e,de:d,unit:"Unit 2",box:0,ok:0,bad:0})});const en=S.words.find(w=>w.en=="end");if(en&&!/enden/.test(en.de))en.de+="/enden/beenden";S.v=5;save()}
+if(S.v<6){SEED6.split(";").forEach((p,i)=>{const[e,d]=p.split("=");const x=S.words.find(w=>w.en.toLowerCase()==e.toLowerCase());if(!x)S.words.push({id:5000+i,en:e,de:d,unit:"Unit 3",box:0,ok:0,bad:0});else if(!/^Unit \d$/.test(x.unit)){x.unit="Unit 3";x.de=d}});[["cook","kochen/zubereiten"],["line","die Linie"],["mean","bedeuten"],["time","das Mal"],["remember","an etwas denken"],["after","nachdem"]].forEach(([e,d])=>{const x=S.words.find(w=>w.en==e);if(x&&!x.de.includes(d))x.de+="/"+d});S.v=6;save()}
+if(S.v<7){SEED7.split(";").forEach((p,i)=>{const[e,d,u]=p.split("=");const x=S.words.find(w=>w.en.toLowerCase()==e.toLowerCase());if(!x)S.words.push({id:6000+i,en:e,de:d,unit:u||"Unit 4",box:0,ok:0,bad:0});else if(!/^Unit \d$/.test(x.unit)){x.unit=u||"Unit 4";x.de=d}});[["clean","putzen/säubern/reinigen"],["break","zerbrechen/kaputt machen"],["order","der Befehl"],["if","ob"],["tear","reißen"]].forEach(([e,d])=>{const x=S.words.find(w=>w.en==e);if(x&&!x.de.includes(d))x.de+="/"+d});S.v=7;save()}
+if(S.v<8){SEED8.split(";").forEach((p,i)=>{const[e,d,u]=p.split("=");if(!S.words.some(w=>w.en.toLowerCase()==e.toLowerCase()))S.words.push({id:7000+i,en:e,de:d,unit:u,box:0,ok:0,bad:0})});S.v=8;save()}
+function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
+function rec(k,good){S.st[k]=S.st[k]||[0,0];S.st[k][good?0:1]++;if(good)S.pts+=10;save()}
+const norm=t=>String(t).toLowerCase().replace(/’/g,"'").replace(/[.!?,]/g,"").replace(/\s+/g," ").trim();
+const units=()=>[...new Set(S.words.map(w=>w.unit))];
+const U=["Unit 1","Unit 2","Unit 3","Unit 4"];
+const selOK=u=>S.sel.includes(U.includes(u)?u:"Weitere");
+const PGM={};
+(function(){
+  const T3=[["My name is Alice.",225],["cool",226],["ball",227],["awesome",228],["day",229],["pet",230],["at home",231],["upstairs",232],["message",233],["e.g.",234],["country",235],["bin",236],["living room",237],["soon",238],["address",239]];
+  const O3={zero:238};["thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety","one hundred"].forEach(k=>O3[k]=239);
+  const add=(seed,u0,T,O)=>{let i=0,pg=T[0][1];seed.split(";").forEach(p=>{const a=p.split("="),k=a[0].toLowerCase();while(i+1<T.length&&T[i+1][0].toLowerCase()==k){i++;pg=T[i][1]}if(!PGM[k])PGM[k]=[a[2]||u0,(O&&O[k])||pg]})};
+  add(SEED3,"Unit 1",T3,O3);
+  add(SEED4,"Unit 2",[["robot",240],["want to",240],["every",241],["ICT",242],["page",244],["against",245],["exciting",246],["happen",247],["broken",248]]);
+  add(SEED5,"Unit 2",[["midnight",243]]);
+  add(SEED6,"Unit 3",[["thought bubble",248],["nervous",251],["move",250],["chess",249],["greet",252],["not ... yet",253],["pear",254],["pass on",255]]);
+  add(SEED7,"Unit 4",[["I don't think so.",256],["out and about",256],["pavement",257],["description",258],["jewel",259],["crazy",260],["honestly",261]]);
+})();
+const PGL={};Object.values(PGM).forEach(a=>{(PGL[a[0]]=PGL[a[0]]||new Set()).add(a[1])});
+const wsel=w=>{const u=U.includes(w.unit)?w.unit:"Weitere";if(!S.sel.includes(u))return false;if(u=="Weitere")return true;const a=(S.pg&&S.pg[u])||["Alle"];if(a.includes("Alle"))return true;const m=PGM[w.en.toLowerCase()];return !!m&&m[0]==u&&a.includes(m[1])};
+const STOP=new Set("a an the is are am i you he she it we they my your his her our their to in on at of and but or do does don't doesn't not no can can't have has with for from this that these those there what who where when why how please yes me him us them its as so very".split(" "));
+function pgOK(u,txt){
+  const a=(S.pg&&S.pg[u])||["Alle"];if(a.includes("Alle"))return true;
+  const toks=String(txt).toLowerCase().replace(/’/g,"'").match(/[a-z']+/g)||[];
+  return toks.some(t=>{if(STOP.has(t))return false;const m=PGM[t];return !!m&&m[0]==u&&a.includes(m[1])});
+}
+const uOK=(u,t)=>S.sel.includes(u)&&(u=="Weitere"||pgOK(u,t));
+function tp(u,p){
+  S.pg=S.pg||{};let a=S.pg[u]||["Alle"];
+  if(p=="Alle")a=["Alle"];
+  else{a=a.filter(x=>x!="Alle");a=a.includes(p)?a.filter(x=>x!=p):[...a,p];if(!a.length)a=["Alle"]}
+  S.pg[u]=a;V.w=null;save();render();
+}
+const WP=()=>S.words.filter(wsel);
+const TU={"Simple Present":"Unit 2","Fragen & Verneinung":"Unit 2","this/that/these/those":"Unit 2","Objektpronomen":"Unit 2","Uhrzeit":"Unit 2","Plural":"Unit 2","Imperativ":"Unit 2","Häufigkeitsadverbien":"Unit 3","do/does-Fragen":"Unit 3","have to / would like":"Unit 3","much/many":"Unit 3","present progressive":"Unit 4","Wetter":"Unit 4","Obst & Gemüse":"Weitere","Tiere":"Weitere","Text: Monday morning":"Unit 2","Text: School calendar":"Unit 2","Höflichkeit":"Unit 2","Satzbau: Zeit & Ort":"Unit 2","Ordnungszahlen":"Unit 2","do/go/play":"Unit 3","Höflich: nicht mögen":"Unit 3","wh-Fragen":"Unit 3","Interview":"Unit 3","Clubs":"Unit 3","Rezept":"Unit 3","Höflich: Nein sagen":"Unit 3","-ing-Formen":"Unit 4","Simple Present oder Progressive":"Unit 4","wh-Fragen (jetzt)":"Unit 4","Orte (Nachbarschaft)":"Unit 4","Familie":"Unit 1","Personen beschreiben":"Unit 2","Text: Pass the parcel":"Unit 3"};
+const GU=()=>G.filter(g=>uOK(TU[g[0]]||"Unit 1",g[1]+" "+g[2]));
+const LU=()=>LT.filter(x=>uOK(x[3]||"Unit 1",x[0]+" "+String(x[1]).split("|")[0]));
+const TRU=()=>TR.filter(x=>uOK(x[2]||"Unit 1",x[1][0]));
+const WO=[["I | street | nice | in | live | a",["I live in a nice street"]],["We | big | a | flat | have",["We have a big flat"]],["Our | tidy | room | is | living | very",["Our living room is very tidy"]],["The | new | is | sofa",["The sofa is new"]],["There | a | is | garden | small",["There is a small garden"]],["It | green | very | is",["It is very green"]],["The | tree | an | garden | old | has",["The garden has an old tree"]],["There | flowers | blue | too | are",["There are blue flowers too"]],
+["The | is | cow | big",["The cow is big"],"Weitere"],
+["I | cherries | like",["I like cherries"],"Weitere"],
+["A | is | lemon | yellow",["A lemon is yellow"],"Weitere"],
+["The | pig | pink | is",["The pig is pink"],"Weitere"],
+["My | has | long | a | cat | tail",["My cat has a long tail"],"Weitere"],
+["We | at | see | lions | the | zoo",["We see lions at the zoo"],"Weitere"],
+["Rabbits | carrots | like",["Rabbits like carrots"],"Weitere"],
+["He | like | doesn't | broccoli",["He doesn't like broccoli","He does not like broccoli"],"Weitere"],
+["The | very | is | elephant | big",["The elephant is very big"],"Weitere"],
+["A | swim | can | duck",["A duck can swim"],"Weitere"],
+["I | an | eat | apple",["I eat an apple"],"Weitere"],
+["There | sheep | are | on | the | farm",["There are sheep on the farm"],"Weitere"],
+["I | come | always | early",["I always come early"],"Unit 2"],
+["Jake | rugby | plays | for | the | school",["Jake plays rugby for the school"],"Unit 2"],
+["My | brings | school | mum | me | to",["My mum brings me to school"],"Unit 2"],
+["We | live | near | here",["We live near here"],"Unit 2"],
+["Registration | soon | starts",["Registration starts soon"],"Unit 2"],
+["You | map | look | at | can | my",["You can look at my map"],"Unit 2"],
+["French | minutes | in | starts | four",["French starts in four minutes"],"Unit 2"],
+["I | a | secret | have",["I have a secret"],"Unit 2"],
+["lessons | my | time | for | be | on",["Be on time for my lessons"],"Unit 2"],
+["class | to | right | the | books | bring",["Bring the right books to class"],"Unit 2"],
+["classmates | friendly | your | to | be",["Be friendly to your classmates"],"Unit 2"],
+["the | eat | classroom | in | don't",["Don't eat in the classroom","Do not eat in the classroom"],"Unit 2"],
+["phone | use | lesson | in | the | your | don't",["Don't use your phone in the lesson","Do not use your phone in the lesson"],"Unit 2"],
+["desks | draw | walls | on | the | and | don't",["Don't draw on the desks and walls","Don't draw on the walls and desks","Do not draw on the desks and walls"],"Unit 2"],
+["classroom | in | the | shout | don't",["Don't shout in the classroom","Do not shout in the classroom"],"Unit 2"],
+["your | do | homework",["Do your homework"],"Unit 2"],
+["registration | have | before | first | we | lesson | the",["We have registration before the first lesson","Before the first lesson we have registration"],"Unit 2"],
+["a | break | 10:45 | short | at | have | we",["We have a short break at 10:45","At 10:45 we have a short break"],"Unit 2"],
+["lessons | two | we | lunch | have | after",["We have two lessons after lunch","After lunch we have two lessons"],"Unit 2"],
+["art | have | afternoon | in | lesson | we | an | the",["We have an art lesson in the afternoon","In the afternoon we have an art lesson"],"Unit 2"],
+["We | an | ice cream | can | have | on | Saturday | in | my | dad's | café",["We can have an ice cream in my dad's café on Saturday"],"Unit 2"],
+["Scout has breakfast | every morning | with her family",["Scout has breakfast with her family every morning"],"Unit 2"],
+["Then she flies | before lunch | high in the sky",["Then she flies high in the sky before lunch"],"Unit 2"],
+["Scout's parents find | in the sea | before lunch | fish",["Scout's parents find fish in the sea before lunch"],"Unit 2"],
+["Scout and her parents | under Brighton Pier | at lunch time | meet",["Scout and her parents meet under Brighton Pier at lunch time"],"Unit 2"],
+["Scout | after lunch | plays | with her sisters and brothers | on the pier",["Scout plays on the pier with her sisters and brothers after lunch","Scout plays with her sisters and brothers on the pier after lunch"],"Unit 2"],
+["Sunita | goes | often | her | house | grandma's | to",["Sunita often goes to her grandma's house"],"Unit 3"],
+["has | Alice | always | practice | hockey | Saturdays | on",["Alice always has hockey practice on Saturdays"],"Unit 3"],
+["Zane | plays | usually | in | park | the | rugby",["Zane usually plays rugby in the park"],"Unit 3"],
+["never | Noah | plays | games | computer",["Noah never plays computer games"],"Unit 3"],
+["Lily | watches | sometimes | in | the | morning | TV",["Lily sometimes watches TV in the morning"],"Unit 3"],
+["How often | you | practise | do",["How often do you practise","How often do you practice"],"Unit 3"],
+["play rugby | with | Who | do | you",["Who do you play rugby with"],"Unit 3"],
+["you and your friends | do | Where | play",["Where do you and your friends play"],"Unit 3"],
+["you | like | do | films",["Do you like films"],"Unit 3"],
+["have | party | to | big | a | I'd | like | birthday",["I'd like to have a big birthday party","I would like to have a big birthday party"],"Unit 3"],
+["want | I | friends | to | my | all | invite",["I want to invite all my friends"],"Unit 3"],
+["don't | I | to | want | have | party | my | home | at",["I don't want to have my party at home"],"Unit 3"],
+["go | to | I'd | like | to | the | instead | park",["I'd like to go to the park instead","I would like to go to the park instead"],"Unit 3"],
+["have | to | lot | a | I | of | food | buy",["I have to buy a lot of food"],"Unit 3"],
+["at | bus stop | we | right | are | the | waiting",["Are we waiting at the right bus stop"],"Unit 4"],
+["uniform | that | is | boy | wearing | Varndean | a",["Is that boy wearing a Varndean uniform"],"Unit 4"],
+["playing | young | are | cricket | children | those",["Are those young children playing cricket"],"Unit 4"],
+["girl | a | that | us | photo | of | is | taking",["Is that girl taking a photo of us"],"Unit 4"],
+["seagull | that | is | a | snake | eating",["Is that seagull eating a snake"],"Unit 4"],
+["me | you | with | fun | are | today | having",["Are you having fun with me today"],"Unit 4"],
+["school | I | play | after | Thursday | rugby | on",["I play rugby after school on Thursday","On Thursday I play rugby after school"],"Unit 2"],
+["I | have | pm | friends | lunch | to | the | canteen | at | 12:45 | and | with | go | my",["I go to the canteen with my friends and have lunch at 12:45 pm","I go to the canteen with my friends and have lunch at 12:45"],"Unit 2"],
+["to | friends | meet | I | my | and | school | we | walk",["I meet my friends and we walk to school"],"Unit 2"],
+["at | I | breakfast | eight | o'clock | have",["I have breakfast at eight o'clock"],"Unit 2"],
+["at | lesson | I | o'clock | French | have | a | eleven",["I have a French lesson at eleven o'clock"],"Unit 2"],
+["I | after | play | games | like | to | dinner | computer",["I like to play computer games after dinner","After dinner I like to play computer games"],"Unit 2"]];
+const WOU=()=>WO.filter(x=>uOK(x[2]||"Unit 1",x[1][0]));
+
+const NAV=[["home","Start"],["vokabeln","Vokabeln"],["grammatik","Grammatik"],["uebungen","Übungen"],["uhrzeit","Uhrzeit"],["test","Test"],["fortschritt","Fortschritt"],["einstellungen","Einstellungen"]];
+function render(){
+  const v=location.hash.slice(1)||"home";
+  $("#nav").innerHTML=NAV.map(n=>`<a href="#${n[0]}" class="${n[0]==v?"on":""}">${n[1]}</a>`).join("");
+  const f={home,vokabeln,grammatik,uebungen,uhrzeit,test,fortschritt,einstellungen,woerter,sicherung,quiz}[v]||home;
+  $("#app").innerHTML=f();
+  const a=$("#ans")||$("#qa");if(a&&(a.id=="qa"||!V.res))a.focus();
+}
+window.addEventListener("hashchange",render);
+
+const dk=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+function tm(w){
+  S.t=S.t||{};const n=new Date();
+  if(!w)return S.t[dk(n)]||0;
+  const m=new Date(n);m.setDate(n.getDate()-((n.getDay()+6)%7));
+  let s=0;for(let i=0;i<7;i++){const d=new Date(m);d.setDate(m.getDate()+i);s+=S.t[dk(d)]||0}
+  return s;
+}
+function ttxt(){return `Heute: <b>${Math.floor(tm(0)/60)} min</b> &nbsp;·&nbsp; Woche: <b>${Math.floor(tm(1)/60)} min</b>`}
+function unitBox(){
+  const cnt=u=>S.words.filter(w=>(U.includes(w.unit)?w.unit:"Weitere")==u).length;
+  const row=(label,extra,oc,on)=>`<label class="chk"><input type="checkbox" ${on?"checked":""} onchange="${oc}"><span>${label}</span><span class="mu">${extra}</span></label>`;
+  let h=`<div class="card"><b>Welche Units möchtest du üben?</b>`;
+  [...U,"Weitere"].forEach(u=>{
+    h+=row(u=="Weitere"?"Weitere Wörter":u,cnt(u)+" Wörter",`tg('${u}')`,S.sel.includes(u));
+    if(u!="Weitere"&&S.sel.includes(u)&&PGL[u]){
+      const a=(S.pg&&S.pg[u])||["Alle"];
+      h+=`<div class="sub">`+[...PGL[u]].sort((x,y)=>x-y).map(p=>row(String(p),"",`tp('${u}',${p})`,a.includes(p))).join("")+row("Alle","",`tp('${u}','Alle')`,a.includes("Alle"))+`</div>`;
+    }
+  });
+  return h+`</div>`;
+}
+function unitBoxOld(){
+  const cnt=u=>S.words.filter(w=>(U.includes(w.unit)?w.unit:"Weitere")==u).length;
+  return `<div class="card"><b>Welche Units möchtest du üben?</b>`+[...U,"Weitere"].map(u=>`<label class="chk"><input type="checkbox" ${S.sel.includes(u)?"checked":""} onchange="tg('${u}')"><span>${u=="Weitere"?"Weitere Wörter":u}</span><span class="mu">${cnt(u)} Wörter</span></label>`).join("")+`</div>`;
+}
+function tg(u){S.sel=S.sel.includes(u)?S.sel.filter(x=>x!=u):[...S.sel,u];if(!S.sel.length)S.sel=[u];V.w=null;save();render()}
+function home(){
+  const h=new Date().getHours(),g=h<11?"Guten Morgen":h<18?"Hallo":"Guten Abend";
+  const hard=S.words.filter(w=>w.bad>w.ok).length;
+  return `<h1>${g} Mia! 👋</h1><p class="mu">Access 1 · Klasse 5 · <b>${S.pts}</b> Punkte · ${WP().length} Wörter${hard?` · ${hard} schwierige`:""}</p>
+  ${unitBox()}<div class="grid"><a class="tile" href="#vokabeln"><span>📚</span>Vokabeln</a><a class="tile" href="#grammatik"><span>✏️</span>Grammatik</a><a class="tile" href="#uebungen"><span>📝</span>Übungen</a><a class="tile" href="#uhrzeit"><span>🕒</span>Uhrzeit</a><a class="tile" href="#test"><span>🏆</span>Test</a><a class="tile" href="#fortschritt"><span>📈</span>Fortschritt</a></div><p id="tt" class="mu" style="text-align:center;margin-top:24px">${ttxt()}</p><p class="mu" style="text-align:center;font-size:13px;margin-top:12px">Version 0.2611<br>Copyright by Patrick Uhle</p>`;
+}
+
+/* Vokabeltrainer */
+function pick(){
+  const pool=WP().filter(w=>V.unit!="hard"||w.bad>w.ok);
+  if(!pool.length){V.w=null;return}
+  const wt=pool.map(w=>pool.length>1&&w.id==V.last?0:5-Math.min(w.box,4));
+  let r=Math.random()*wt.reduce((a,b)=>a+b,0),i=0;
+  while(i<pool.length-1&&r>=wt[i]){r-=wt[i];i++}
+  V.w=pool[i];V.res=null;
+}
+function vokabeln(){
+  if(!V.w||!S.words.includes(V.w)||!wsel(V.w))pick();
+  const opts=`<option value="all">Alle gewählten Wörter</option><option value="hard"${V.unit=="hard"?" selected":""}>Schwierige Wörter</option>`;
+  let h=`<h1>Vokabeln</h1><select onchange="V.unit=this.value;pick();render()">${opts}</select>
+  <button class="${V.dir=="ed"?"on":""}" onclick="V.dir='ed';V.res=null;render()">Englisch → Deutsch</button><button class="${V.dir=="de"?"on":""}" onclick="V.dir='de';V.res=null;render()">Deutsch → Englisch</button>`;
+  const w=V.w;
+  if(!w)return h+`<div class="card">Hier gibt es noch keine Wörter. Super, dann gibt es auch keine schwierigen!</div>`;
+  const q=V.dir=="ed"?w.en:w.de.split("/")[0],tgt=V.dir=="ed"?w.de:w.en;
+  h+=`<div class="card"><div class="mu">Übersetze:</div><div class="big">${esc(q)}</div>
+  <input id="ans" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Antwort schreiben" ${V.res?"disabled":""} onkeydown="if(event.key=='Enter')${V.res?"next()":"check()"}">`;
+  if(V.res)h+=`<p class="${V.res.good?"good":"badc"}">${V.res.good?"Richtig! ✅":"Leider falsch. Richtig ist: "+esc(tgt)}</p><button class="p" onclick="next()">Weiter</button>`;
+  else h+=`<button class="p" onclick="check()">Prüfen</button>`;
+  return h+`</div>`;
+}
+function check(){
+  const w=V.w,v=norm($("#ans").value).replace(/^to /,"");if(!v)return;
+  const tgt=V.dir=="ed"?w.de:w.en,acc=tgt.split(/[\/,;]/).map(norm),good=acc.concat(acc.map(a=>a.replace(/^(der|die|das|ein|eine) /,""))).includes(v);
+  w.box=good?Math.min(w.box+1,4):0;good?w.ok++:w.bad++;rec("u:"+w.unit,good);
+  V.res={good};render();
+}
+function next(){V.last=V.w.id;pick();render()}
+
+/* Quiz-Engine */
+function mk(t,c,wr,e,k){return{q:t,a:c,opts:sh([c,...wr]),e,k}}
+const TX={"Text: Monday morning":"<b>📖 Kurztext zur Szene</b><br>Monday morning at Varndean School. It is half past eight. Sunita is in the school playground. She is early, because she always comes early. She lives in Hove, which is far from school, and her mum brings her to school every day before she goes to work. Alice walks to school with her brother Jake. They live near the school, in Patcham. Jake is in Year 9. He plays rugby for the school and he loves computers. Then Lily arrives on her bike. The three friends go to registration. Mr Lee reads the names of the students. Tim is not here today. Later, Zane says that the school is big, and Sunita says he can look at her map of the school grounds. She makes maps on her computer. After that the students go to their French lesson, but Noah cannot find his timetable. Lily is in a hurry, because French starts in four minutes. Alice is very happy today. She has a big secret.","Text: School calendar":"<b>📅 Der Schulkalender</b><br>A British school year has three terms. The autumn term starts on 7th September. The half-term holidays are from 24th to 28th October. Open evening is on 12th November, and the term ends on 17th December. The spring term starts on 16th January. The half-term holidays are from 18th to 22nd February. Parents’ evening is on 23rd March, and the term ends on 8th April. The summer term starts on 26th April. The half-term holidays are from 29th May to 3rd June. Sports day is on 30th June. The term ends on 20th July, and the summer holidays end on 31st August.","Text: Pass the parcel":"<b>🎉 Pass the parcel</b><br>Pass the parcel is a very popular party game. Before the game you choose a present, for example a book or some chocolates. Then you put 20 to 30 pieces of coloured paper around it, so you have a big parcel. All the players sit in a circle and someone plays music. The players pass the parcel from person to person. When the music stops, the player with the parcel tears off one piece of paper. Then the music starts again. The game ends when a player tears off the last piece of paper and finds the present."};
+function gq(g){const q=mk(g[1],g[2],g[3],g[4],"g:"+g[0]);if(TX[g[0]])q.vis=`<div class="txt">${TX[g[0]]}</div>`;return q}
+function quiz(){
+  if(!Q)return home();
+  const q=Q.qs[Q.i];
+  if(!q)return `<h1>Fertig! 🎉</h1><div class="card"><div class="big">${Q.ok} von ${Q.qs.length} richtig</div><p>${Q.ok==Q.qs.length?"Perfekt, Mia!":Q.ok>=Q.qs.length*.7?"Sehr gut gemacht!":"Übung macht die Meisterin – versuch es gleich noch einmal."}</p><a class="btn p" href="#home">Zur Startseite</a></div>`;
+  let h=`<h1>${esc(Q.t)}</h1><p class="mu">Frage ${Q.i+1} von ${Q.qs.length}</p><div class="card">${q.vis||""}<div class="big">${esc(q.q)}</div>`;
+  q.opts.forEach((o,i)=>{const c=Q.sel==null?"":o==q.a?"ok":o==Q.sel?"bad":"";h+=`<button class="opt ${c}" onclick="ans(${i})">${q.ov?q.ov[o]:esc(o)}</button>`});
+  if(q.ty&&Q.sel==null)h+=`<input id="qa" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Antwort schreiben" onkeydown="if(event.key=='Enter')tans()"><button class="p" onclick="tans()">Prüfen</button>`;
+  if(Q.sel!=null)h+=`<p class="${Q.sel==q.a?"good":"badc"}">${Q.sel==q.a?"Richtig! ✅":"Nicht ganz."} ${esc(q.e)}</p><button class="p" onclick="Q.i++;Q.sel=null;render()">Weiter</button>`;
+  return h+`</div>`;
+}
+function ans(i){const q=Q.qs[Q.i];if(Q.sel!=null)return;Q.sel=q.opts[i];const g=Q.sel==q.a;if(g)Q.ok++;rec(q.k,g);render()}
+function start(qs,t){if(!qs.length){$("#app").innerHTML=`<h1>${esc(t)}</h1><div class="card">Für die gewählten Units gibt es dafür noch keine Aufgaben.</div><a class="btn p" href="#home">Units ändern</a>`;return}Q={qs,t,i:0,ok:0,sel:null};location.hash="#quiz";render()}
+
+function tq(t,q,acc,note){return{q,ty:1,a:acc[0],acc,opts:[],e:`Richtig: ${acc[0]}. ${note||""}`,k:"g:"+t}}
+function tans(){const q=Q.qs[Q.i];if(Q.sel!=null)return;const r=$("#qa").value;if(!norm(r))return;const g=q.acc.map(norm).includes(norm(r));Q.sel=g?q.a:"✗";if(g)Q.ok++;rec(q.k,g);render()}
+function uebungen(){
+  return `<h1>Übungen</h1><p class="mu">Hier schreibst du die Antwort selbst. Je 10 Aufgaben pro Runde.</p>
+  <button class="opt" onclick="start(sh(LU()).slice(0,10).map(x=>tq('Lückentexte',x[0],x[1].split('|'),x[2])),'Lückentexte')">✏️ Lückentexte</button>
+  <button class="opt" onclick="start(sh(TRU()).slice(0,10).map(x=>tq('Übersetzen','Übersetze: '+x[0],x[1],'')),'Übersetzen')">🔤 Übersetzen (Deutsch → Englisch)</button>
+  <button class="opt" onclick="start(sh(WOU()).slice(0,8).map(x=>tq('Satzbau','Ordne die Wörter zu einem Satz: '+x[0],x[1],'')),'Wörter ordnen')">🧩 Wörter ordnen</button>`;
+}
+function grammatik(){
+  const ts=[...new Set(GU().map(g=>g[0]))];if(!ts.length)return `<h1>Grammatik</h1><p class="mu">Für die gewählten Units gibt es noch keine Grammatikfragen.</p>`;
+  return `<h1>Grammatik</h1><p class="mu">Wähle ein Thema:</p>`+ts.map(t=>{const s=S.st["g:"+t]||[0,0];return `<button class="opt" onclick="start(sh(G.filter(g=>g[0]=='${t}')).map(gq),'${t}')">${esc(t)} <span class="mu">· ${s[0]} richtig, ${s[1]} falsch</span></button>`}).join("");
+}
+function test(){
+  if(WP().length<4)return `<h1>Test</h1><div class="card">Für den Test braucht es mindestens 4 Wörter.</div>`;
+  return `<h1>Test</h1><p class="mu">Gemischte Fragen aus Vokabeln und Grammatik der gewählten Units. Uhrzeitfragen sind immer dabei.</p><h2>Gemischt</h2><button class="p" onclick="startTest(10)">Kurz (10)</button><button class="p" onclick="startTest(20)">Groß (20)</button><h2>Nur Vokabeln</h2><button class="p" onclick="vocTest(15)">Vokabeltest (15)</button><button class="p" onclick="vocTest(30)">Großer Vokabeltest (30)</button><h2>Nur Grammatik</h2><button class="p" onclick="start(sh(GU()).slice(0,15).map(gq),'Grammatiktest')">Grammatiktest (15)</button><h2>Selbst schreiben</h2><button onclick="ltTest()">Lückentext-Test (12)</button><button onclick="trTest()">Übersetzungstest (12)</button>`;
+}
+function startTest(n=10){const c=Math.round(n/5),h=Math.floor((n-c)/2);
+  const W=WP(),vq=sh(W).slice(0,h).map(w=>{const c=w.de.split("/")[0],wr=sh(W.filter(x=>x.de!=w.de)).slice(0,3).map(x=>x.de.split("/")[0]);return mk(`Was heißt „${w.en}“?`,c,wr,`${w.en} = ${w.de}`,"u:"+w.unit)});
+  start(sh([...vq,...sh(GU()).slice(0,h).map(gq),...Array.from({length:c},()=>clockQ("a"))]),"Test");
+}
+
+const pk=(ws,g,c)=>[...new Set(sh(ws).map(g))].filter(x=>x!=c).slice(0,3);
+function vocTest(n){
+  const f=w=>w.de.split("/")[0];
+  const W=WP();start(sh(W).slice(0,n).map((w,i)=>{
+    if(i%2)return mk(`Wie heißt „${f(w)}“ auf Englisch?`,w.en,pk(W.filter(x=>x.en!=w.en),x=>x.en,w.en),`${f(w)} = ${w.en}`,"u:"+w.unit);
+    return mk(`Was heißt „${w.en}“?`,f(w),pk(W.filter(x=>x.en!=w.en),f,f(w)),`${w.en} = ${w.de}`,"u:"+w.unit);
+  }),"Vokabeltest");
+}
+function ltTest(){start(sh(LU()).slice(0,12).map(x=>tq("Lückentexte",x[0],x[1].split("|"),x[2])),"Lückentext-Test")}
+function trTest(){start(sh(TRU()).slice(0,12).map(x=>tq("Übersetzen","Übersetze: "+x[0],x[1],"")),"Übersetzungstest")}
+const NW=["","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve"];
+const MW={5:"five",10:"ten",20:"twenty",25:"twenty-five"};
+const pad=x=>String(x).padStart(2,"0");
+function tw(h,m){
+  const n=x=>NW[(x-1)%12+1];
+  if(m==0)return n(h)+" o'clock";
+  if(m==15)return "quarter past "+n(h);
+  if(m==30)return "half past "+n(h);
+  if(m==45)return "quarter to "+n(h+1);
+  return m<30?MW[m]+" past "+n(h):MW[60-m]+" to "+n(h+1);
+}
+function dig(h,m,s){return `<div class="dig${s?" s":""}">${pad(h)}:${pad(m)}</div>`}
+function clk(h,m,sz){
+  const P=(a,l)=>{const r=a*Math.PI/180;return[50+l*Math.sin(r),50-l*Math.cos(r)]};
+  let t="";
+  for(let i=1;i<=12;i++){const p=P(i*30,35);t+=`<text x="${p[0]}" y="${p[1]}" font-size="9" text-anchor="middle" dominant-baseline="central" fill="currentColor">${i}</text>`}
+  for(let i=0;i<60;i++){const a=P(i*6,i%5?45:43),b=P(i*6,47);t+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="currentColor" stroke-width="${i%5?0.4:1}"/>`}
+  const H=P(((h%12)+m/60)*30,22),M=P(m*6,32);
+  return `<svg viewBox="0 0 100 100" width="${sz}" height="${sz}" style="color:var(--tx)"><circle cx="50" cy="50" r="48" fill="var(--card)" stroke="currentColor" stroke-width="2"/>${t}<line x1="50" y1="50" x2="${H[0]}" y2="${H[1]}" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><line x1="50" y1="50" x2="${M[0]}" y2="${M[1]}" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="50" cy="50" r="3" fill="currentColor"/></svg>`;
+}
+function clockQ(lv){
+  const ms=lv=="e"?[0,15,30,45]:[0,5,10,15,20,25,30,35,40,45,50,55];
+  const rnd=a=>a[Math.floor(Math.random()*a.length)];
+  const T=()=>[1+Math.floor(Math.random()*12),rnd(ms)];
+  const [h,m]=T(),D=new Map();let g=0;
+  while(D.size<3&&g++<80){let [a,b]=T();if(Math.random()<.5)a=h;else b=m;if(a!=h||b!=m)D.set(a+":"+b,[a,b])}
+  const all=sh([[h,m],...D.values()]),w=tw(h,m),kd=Math.floor(Math.random()*3);
+  if(kd<2){
+    const h24=kd==1&&Math.random()<0.3&&h<12?h+12:h;
+    const vis=`<div style="text-align:center">${kd==0?clk(h,m,170):dig(h24,m)}</div>`;
+    return{id:h+":"+m,q:"What time is it?",vis,a:w,opts:all.map(x=>tw(x[0],x[1])),e:`${pad(h)}:${pad(m)} = ${w}`,k:"g:Uhrzeit"};
+  }
+  const an=Math.random()<0.5,key=x=>x[0]+":"+pad(x[1]),ov={};
+  all.forEach(x=>{ov[key(x)]=`<span style="display:block;text-align:center">${an?clk(x[0],x[1],110):dig(x[0],x[1],1)}</span>`});
+  return{id:h+":"+m,q:`Welche Uhr zeigt „${w}“?`,a:key([h,m]),opts:all.map(key),ov,e:`${w} = ${pad(h)}:${pad(m)}`,k:"g:Uhrzeit"};
+}
+function clockGo(lv,n){const seen=new Set(),qs=[];let g=0;while(qs.length<n&&g++<600){const q=clockQ(lv);if(!seen.has(q.id)){seen.add(q.id);qs.push(q)}}start(qs,"Uhrzeit")}
+function uhrzeit(){
+  return `<h1>Uhrzeit 🕒</h1><p class="mu">Du siehst eine Uhr, mal mit Zeigern, mal digital, und wählst die richtige englische Uhrzeit. Manchmal ist es umgekehrt: Du siehst die Wörter und suchst die passende Uhr. Das geht unabhängig von der Unit-Auswahl.</p>
+  <h2>Leicht</h2><p class="mu">o’clock, half past, quarter past/to</p><button class="p" onclick="clockGo('e',10)">10 Fragen</button><button class="p" onclick="clockGo('e',20)">20 Fragen</button>
+  <h2>Alle Uhrzeiten</h2><p class="mu">auch in 5-Minuten-Schritten (ten past, twenty to …)</p><button class="p" onclick="clockGo('a',10)">10 Fragen</button><button class="p" onclick="clockGo('a',20)">20 Fragen</button>`;
+}
+function fortschritt(){
+  const rows=Object.entries(S.st).sort();
+  const hard=S.words.filter(w=>w.bad>w.ok).sort((a,b)=>(b.bad-b.ok)-(a.bad-a.ok)).slice(0,10);
+  let h=`<h1>Fortschritt</h1><div class="card"><div class="big">${S.pts} Punkte</div></div><h2>Pro Unit / Thema</h2>`;
+  if(!rows.length)h+=`<p class="mu">Noch nichts geübt – los geht’s!</p>`;
+  rows.forEach(([k,[o,b]])=>{const p=Math.round(o/(o+b)*100);h+=`<div class="card"><div class="row" style="border:0"><b>${esc(k.slice(2))}</b><span>${o} richtig · ${b} falsch</span></div><div class="bar"><i style="width:${p}%"></i></div></div>`});
+  h+=`<h2>Schwierige Wörter</h2>`;
+  h+=hard.length?hard.map(w=>`<div class="row"><span>${esc(w.en)} – ${esc(w.de)}</span><span class="badc">${w.bad}× falsch</span></div>`).join(""):`<p class="mu">Keine schwierigen Wörter. Super!</p>`;
+  return h;
+}
+
+/* Wörter verwalten */
+function woerter(){
+  return `<h1>Wörter</h1><div class="card"><b>Neues Wort</b><input id="ne" placeholder="Englisch" autocapitalize="off"><input id="nd" placeholder="Deutsch (Alternativen mit /)"><input id="nu" placeholder="Unit, z. B. Unit 1" value="Unit 1"><button class="p" onclick="addW()">Hinzufügen</button></div>
+  <div class="card"><b>Viele Wörter auf einmal</b><p class="mu">Eine Zeile pro Wort: englisch = deutsch. Tipp: Auf dem iPad lässt sich Text aus einem Foto der Buchseite kopieren (Live Text) und hier einfügen.</p><textarea id="bulk" placeholder="cat = Katze&#10;dog = Hund"></textarea><input id="bu" placeholder="Unit" value="Unit 1"><button class="p" onclick="bulkW()">Importieren</button></div>
+  <h2>Alle Wörter (${S.words.length})</h2>`+S.words.map(w=>`<div class="row"><span>${esc(w.en)} – ${esc(w.de)} <span class="mu">· ${esc(w.unit)}</span></span><button onclick="delW(${w.id})" aria-label="Löschen">🗑</button></div>`).join("");
+}
+function addW(){const e=$("#ne").value.trim(),d=$("#nd").value.trim();if(!e||!d)return;S.words.push({id:Date.now()+Math.random(),en:e,de:d,unit:$("#nu").value.trim()||"Eigene",box:0,ok:0,bad:0});save();render()}
+function bulkW(){const u=$("#bu").value.trim()||"Eigene";$("#bulk").value.split("\n").forEach(l=>{const p=l.split(/\s*[=\t;]\s*/);if(p.length>=2&&p[0]&&p[1])S.words.push({id:Date.now()+Math.random(),en:p[0].trim(),de:p[1].trim(),unit:u,box:0,ok:0,bad:0})});save();render()}
+function delW(id){S.words=S.words.filter(w=>w.id!=id);V.w=null;save();render()}
+
+function einstellungen(){
+  return `<h1>Einstellungen</h1>`+sicherung().replace("<h1>Sicherung</h1>","<h2>Sicherung</h2>")+woerter().replace("<h1>Wörter</h1>","<h2>Wörter</h2>");
+}
+function sicherung(){
+  return `<h1>Sicherung</h1><div class="card"><b>Daten sichern</b><p class="mu">Alles liegt nur auf diesem Gerät. Kopiere den Text und speichere ihn z. B. in einer Notiz.</p><textarea id="ex" readonly>${esc(JSON.stringify(S))}</textarea><button class="p" onclick="cp()">Kopieren</button></div>
+  <div class="card"><b>Wiederherstellen</b><textarea id="im" placeholder="Gesicherten Text hier einfügen"></textarea><button class="p" onclick="imp()">Wiederherstellen</button><p id="msg"></p></div>`;
+}
+function cp(){const t=$("#ex");t.select();try{navigator.clipboard.writeText(t.value)}catch(e){try{document.execCommand("copy")}catch(x){}}}
+function imp(){try{const d=JSON.parse($("#im").value);if(!d||!Array.isArray(d.words))throw 0;S=d;S.st=S.st||{};S.pts=S.pts||0;V.w=null;save();$("#msg").textContent="Wiederhergestellt ✅"}catch(e){$("#msg").textContent="Das hat nicht geklappt. Ist der ganze Text eingefügt?"}}
+let LA=Date.now(),TS=0;
+["click","keydown","touchstart","scroll","mousemove"].forEach(e=>addEventListener(e,()=>{LA=Date.now()},{passive:true}));
+setInterval(()=>{
+  if(document.visibilityState!=="visible"||Date.now()-LA>120000)return;
+  S.t=S.t||{};const k=dk(new Date());S.t[k]=(S.t[k]||0)+5;
+  if(++TS%6==0)save();
+  const el=document.getElementById("tt");if(el)el.innerHTML=ttxt();
+},5000);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")save()});
+render();
+</script>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
+</script>
+</body>
+</html>
