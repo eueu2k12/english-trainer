@@ -1,10 +1,14 @@
 // Service Worker: legt die App im Gerät ab, damit sie auch ohne Internet startet.
 // Bei jedem Start mit Internet wird im Hintergrund die neueste Version geholt.
-const V = "english-trainer-v1";
-const FILES = ["./", "./index.html", "./manifest.webmanifest"];
+const V = "english-trainer-v2";
+const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(V).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
+  e.waitUntil(
+    caches.open(V)
+      .then(c => c.addAll(FILES.map(u => new Request(u, { cache: "reload" }))))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener("activate", e => {
@@ -20,7 +24,7 @@ self.addEventListener("fetch", e => {
   e.respondWith(
     caches.open(V).then(async c => {
       const hit = await c.match(e.request, { ignoreSearch: true });
-      const net = fetch(e.request)
+      const net = fetch(e.request.url, { cache: "no-cache" })
         .then(r => { if (r && r.ok) c.put(e.request, r.clone()); return r; })
         .catch(() => null);
       return hit || (await net) || c.match("./index.html");
