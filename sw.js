@@ -1,7 +1,7 @@
 // Service Worker: legt die App im Gerät ab, damit sie auch ohne Internet startet.
 // Bei jedem Start mit Internet wird im Hintergrund die neueste Version geholt.
-const V = "english-trainer-v2";
-const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
+const V = "english-trainer-v3";
+const FILES = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png", "./spiele.html"];
 
 self.addEventListener("install", e => {
   e.waitUntil(

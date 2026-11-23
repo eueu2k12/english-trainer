@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Tier-Spielplatz</title>
+<style>
+:root{--bg:#eaf6ff;--card:#fff;--tx:#17324d;--mut:#5b7189;--ac:#2f8cff;--ok:#2fb36b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10202f;--card:#1a3045;--tx:#eaf3fb;--mut:#9fb4c8}}
+:root[data-theme="dark"]{--bg:#10202f;--card:#1a3045;--tx:#eaf3fb;--mut:#9fb4c8}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{font-family:-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--tx);-webkit-user-select:none;user-select:none;overflow:hidden;touch-action:manipulation}
+#app{height:100%;max-width:560px;margin:0 auto;padding:12px}
+#menu,#game{height:100%;flex-direction:column;gap:10px}
+#menu{display:flex}#game{display:none}
+.top,.bar{display:flex;align-items:center;justify-content:space-between;gap:8px}
+h1{font-size:22px;margin:0}
+.pill{background:var(--card);padding:6px 12px;border-radius:99px;font-weight:700;box-shadow:0 1px 4px #0002}
+.sub{margin:0;color:var(--mut);font-size:14px}
+#list{display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:auto;padding:2px}
+.card{background:var(--card);color:var(--tx);border:0;border-radius:18px;padding:14px;text-align:left;font:inherit;display:flex;flex-direction:column;gap:3px;box-shadow:0 2px 6px #0002}
+.card:active{transform:scale(.97)}
+.rules{background:#fff9;border-radius:12px;padding:10px 12px;font-size:15px;text-align:left;width:100%;line-height:1.6}.rules b{color:#2f8cff}
+.ani{font-size:80px;line-height:1}
+.bins{display:flex;gap:10px}
+.bins button{width:88px;height:82px;border:0;border-radius:16px;background:#fff;font:inherit;font-size:34px;color:#17324d;box-shadow:0 1px 3px #0003;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.bins small{font-size:12px}
+.em{font-size:40px}.card small{color:var(--mut)}.card i{font-style:normal;color:var(--ac);font-weight:700}
+.btn{border:0;border-radius:14px;padding:12px 16px;font:inherit;font-weight:700;background:var(--ac);color:#fff;margin:4px}
+.btn.alt{background:var(--ok)}.btn:disabled{opacity:.4}
+.wrap{position:relative;flex:1;min-height:0}
+#stage{position:absolute;inset:0;overflow:hidden;border-radius:20px;background:linear-gradient(#bfe6ff,#e8f8ff);color:#17324d}
+#end{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#0007;border-radius:20px;z-index:5}
+#end[hidden]{display:none}
+.box{background:var(--card);padding:22px;border-radius:20px;text-align:center;max-width:300px}
+.box h2{margin:0 0 6px}.box p{margin:4px 0;color:var(--mut)}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:14px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90%;text-align:center;z-index:9}
+.pz{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:14px;text-align:center}
+.pz img{width:48px;height:48px;border-radius:8px;vertical-align:middle;margin-left:8px}
+.board{position:relative;background:#0002;border-radius:12px;overflow:hidden}
+.tile{position:absolute;left:0;top:0;transition:transform .15s;box-shadow:inset 0 0 0 2px #fff9}
+.mem{height:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;align-content:center}
+.mc{aspect-ratio:1/1.1;border:0;border-radius:14px;background:#2f8cff;color:#fff;font:inherit;font-size:28px;font-weight:800;padding:0}
+.mc .bk{display:none;align-items:center;justify-content:center;height:100%;font-size:18px;color:#17324d}
+.mc .bk.big{font-size:44px}
+.mc.on{background:#fff}.mc.on .fr{display:none}.mc.on .bk{display:flex}.mc.ok{background:#c9f2d6}
+.rb,.bn{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px;text-align:center}
+.msg,.tx{margin:0;font-size:14px;min-height:40px}
+.grid{display:grid;gap:3px;background:#0002;padding:3px;border-radius:12px}
+.grid div{background:#fff9;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.prog{min-height:40px;font-size:22px;word-break:break-all;background:#fff9;border-radius:10px;padding:4px 8px;width:100%}
+.keys{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.keys button{font-size:24px;width:52px;height:48px;border:0;border-radius:12px;background:#fff;box-shadow:0 1px 3px #0003}
+.keys .go{background:#2fb36b;color:#fff}
+.big{font-size:72px;font-weight:800;line-height:1}
+.lamps{display:flex;gap:10px}
+.lamps button{width:68px;height:96px;border:0;border-radius:16px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font:inherit;font-size:20px;color:#17324d}
+.lamps span{font-size:34px}.lamps .on{background:#fff3b0}
+.sum{margin:0;font-weight:700}
+.pr{height:100%;display:flex;gap:12px;padding:12px}
+.col{flex:1;display:flex;flex-direction:column;gap:8px;justify-content:center}
+.col button{flex:1;max-height:84px;border:0;border-radius:14px;background:#fff;font:inherit;font-size:34px;font-weight:700;color:#17324d;box-shadow:0 1px 3px #0003}
+#pw button{font-size:20px}.col .s{outline:4px solid #2f8cff}.col .ok{background:#c9f2d6}.col .bad{background:#ffc9c4}
+footer{text-align:center;font-size:12px;color:var(--mut)}
+.card.dis{opacity:.5}
+</style></head>
+<body><div id="app">
+<div id="menu">
+ <div class="top"><h1>Tier-Spielplatz 🐾</h1><span class="pill" id="pts"></span></div>
+ <p class="sub" id="left"></p>
+ <div id="list"></div>
+ <div style="text-align:center"><button class="btn alt" id="back" hidden>📚 Zurück zum Lernen</button><button class="btn" id="demo" hidden>Demo: +50 ⭐</button></div>
+ <footer>Spielrunden kosten Punkte aus der Lernapp</footer>
+</div>
+<div id="game">
+ <div class="bar"><button class="btn" id="xbtn" style="margin:0">✕</button><b id="gt"></b><span class="pill" id="sc"></span></div>
+ <div class="wrap"><div id="stage"></div>
+  <div id="end" hidden><div class="box"><h2 id="et"></h2><p id="ed"></p><p id="en"></p><button class="btn" id="again"></button><button class="btn alt" id="learn">📚 Weiter lernen</button></div></div></div>
+</div>
+</div>
+<div id="toast"></div>
+<script>
+/* ===== Einstellungen / Schnittstelle zur Lernapp ===== */
+const mem={},store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return k in mem?mem[k]:d}},set(k,v){mem[k]=v;try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const P=(window.parent&&window.parent!==window)?window.parent:null;   // Lernapp (gleiche Adresse)
+const CFG={
+ cost:(P&&P.GCOST)||35,   // Punkte pro Spiel (in der Lernapp: 35)
+ maxRounds:999,           // keine Tagesgrenze: nur der Punktestand entscheidet
+ demo:!P,                 // Demo-Knopf nur, wenn die Seite allein geöffnet wird
+ getPoints(){return P&&P.getPts?P.getPts():store.get('mg_points',50)},
+ spendPoints(n){if(P&&P.spendPts)P.spendPts(n);else store.set('mg_points',this.getPoints()-n)},
+ onBack:(P&&P.leaveGames)?()=>P.leaveGames():null
+};
+/* ===== Helfer ===== */
+const $=s=>document.querySelector(s),pick=a=>a[Math.random()*a.length|0],R=(a,b)=>a+Math.random()*(b-a);
+const day=()=>'mg_r_'+new Date().toISOString().slice(0,10),sc=t=>$('#sc').textContent=t;
+function toast(t){const e=$('#toast');e.textContent=t;e.style.opacity=1;clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.opacity=0,2600)}
+/* ===== Menü ===== */
+const G=[
+{id:'puzzle',e:'🧩',n:'Tierpuzzle',d:'Schiebe die Teile zurecht',f:puzzle},
+{id:'robot',e:'🤖',n:'Robo-Programm',d:'Baue Befehle, führe sie aus',f:robot},
+{id:'binary',e:'💡',n:'Binär-Lampen',d:'Zahlen wie ein Computer',f:binary},
+{id:'ifthen',e:'🦆',n:'Wenn-Dann-Zoo',d:'Tiere nach Regeln sortieren',f:ifthen},
+{id:'memory',e:'🃏',n:'Tier-Memory',d:'Bild und englisches Wort finden',f:memory},
+{id:'pairs',e:'⚡',n:'Word-Match',d:'Bild + englisches Wort, 60 Sekunden',f:pairs}];
+let cur=null,cleanup=null,live=0;
+function menu(){
+ const left=Math.max(0,CFG.maxRounds-store.get(day(),0));
+ $('#pts').textContent='⭐ '+CFG.getPoints();
+ const nn=Math.floor(CFG.getPoints()/CFG.cost);
+ $('#left').textContent=CFG.maxRounds>=999?(nn?`Du kannst ${nn} Spiel${nn>1?'e':''} einlösen (${CFG.cost} ⭐ pro Spiel)`:`Für ein Spiel brauchst du ${CFG.cost} ⭐. Dir fehlen noch ${CFG.cost-CFG.getPoints()} ⭐.`):(left?`Heute noch ${left} Spielrunden möglich`:'Für heute ist Schluss – morgen geht es weiter!');
+ $('#list').innerHTML=G.map(g=>`<button class="card${CFG.getPoints()<CFG.cost?' dis':''}" data-id="${g.id}"><span class="em">${g.e}</span><b>${g.n}</b><small>${g.d}</small><i>${CFG.cost} ⭐</i></button>`).join('');
+ $('#demo').hidden=!CFG.demo;$('#back').hidden=!CFG.onBack;
+}
+const show=n=>{$('#menu').style.display=n=='menu'?'flex':'none';$('#game').style.display=n=='game'?'flex':'none'};
+function stop(){live=0;cleanup&&cleanup();cleanup=null}
+function play(id){
+ const g=G.find(x=>x.id===id),used=store.get(day(),0);
+ if(used>=CFG.maxRounds)return toast('Für heute ist genug gespielt. Morgen gibt es neue Runden! 🌙');
+ if(CFG.getPoints()<CFG.cost)return toast('Dir fehlen noch Punkte. Beantworte Aufgaben in der Lernapp! 📚');
+ CFG.spendPoints(CFG.cost);store.set(day(),used+1);
+ stop();cur=g;show('game');$('#gt').textContent=g.e+' '+g.n;$('#end').hidden=true;sc('');
+ const st=$('#stage');st.innerHTML='';live=1;cleanup=g.f(st,end)||null;
+}
+function end(t,d){
+ if(!live)return;stop();
+ const ok=CFG.getPoints()>=CFG.cost&&store.get(day(),0)<CFG.maxRounds;
+ $('#et').textContent=t;$('#ed').textContent=d;
+ $('#en').textContent=ok?'Noch eine Runde?':'Dafür reichen die Punkte nicht mehr – sammle in der Lernapp neue! 📚';
+ $('#again').textContent=`Nochmal (${CFG.cost} ⭐)`;$('#again').disabled=!ok;$('#end').hidden=false;
+}
+function close(){stop();show('menu');menu()}
+$('#list').onclick=e=>{const b=e.target.closest('.card');b&&play(b.dataset.id)};
+$('#xbtn').onclick=close;$('#again').onclick=()=>play(cur.id);
+$('#learn').onclick=()=>{close();CFG.onBack&&CFG.onBack()};$('#back').onclick=()=>CFG.onBack&&CFG.onBack();
+$('#demo').onclick=()=>{CFG.spendPoints(-50);menu()};
+window.MiniGames={config:CFG,refresh:menu};
+menu();
+/* ===== Spiel 1: Tierpuzzle (Schiebepuzzle 3x3) ===== */
+function puzzle(st,end){
+ const E=pick(['🦊','🐼','🦁','🐸','🐯','🐨','🐙','🦄']),c=document.createElement('canvas');c.width=c.height=300;
+ const x=c.getContext('2d'),gr=x.createLinearGradient(0,0,300,300);gr.addColorStop(0,'#bfe6ff');gr.addColorStop(1,'#d8f5c4');
+ x.fillStyle=gr;x.fillRect(0,0,300,300);x.font='200px serif';x.textAlign='center';x.textBaseline='middle';x.fillText(E,150,165);
+ const url=c.toDataURL(),S=Math.min(st.clientWidth-24,st.clientHeight-110),T=S/3;
+ st.innerHTML=`<div class="pz"><div>Schiebe die Teile, bis das Tier komplett ist.<img src="${url}" alt=""></div><div class="board" style="width:${S}px;height:${S}px"></div></div>`;
+ const b=st.querySelector('.board'),slot=[0,1,2,3,4,5,6,7,8],tiles=[];let moves=0,done=0;
+ for(let t=0;t<8;t++){const d=document.createElement('div');d.className='tile';d.style.cssText=`width:${T}px;height:${T}px;background:url(${url});background-size:${S}px ${S}px;background-position:-${t%3*T}px -${(t/3|0)*T}px`;d.onclick=()=>tap(t);b.appendChild(d);tiles[t]=d}
+ const place=()=>slot.forEach((t,i)=>{if(t<8)tiles[t].style.transform=`translate(${i%3*T}px,${(i/3|0)*T}px)`});
+ const adj=(i,j)=>Math.abs(i%3-j%3)+Math.abs((i/3|0)-(j/3|0))===1;
+ function tap(t){if(done)return;const i=slot.indexOf(t),e=slot.indexOf(8);if(!adj(i,e))return;slot[e]=t;slot[i]=8;moves++;sc(moves+' Züge');place();
+  if(slot.every((v,k)=>v===k)){done=1;setTimeout(()=>end('Geschafft! 🎉',`Das ${E} ist komplett – in ${moves} Zügen.`),500)}}
+ let prev=-1;for(let k=0;k<80;k++){const e=slot.indexOf(8),i=pick([...Array(9).keys()].filter(j=>adj(j,e)&&j!==prev));slot[e]=slot[i];slot[i]=8;prev=e}
+ place();sc('0 Züge');
+}
+/* ===== Spiel 2: Robo-Programm (Befehle, Reihenfolge, Fehlersuche) ===== */
+function robot(st,end){
+ const L=[{s:[4,0],g:[0,4],r:[[2,2],[3,1]]},{s:[4,2],g:[0,2],r:[[3,2],[2,2],[1,2]]},{s:[0,0],g:[4,4],r:[[1,0],[1,1],[1,2],[3,1],[3,2],[3,3],[3,4]]}];
+ const D={'⬆️':[-1,0],'⬇️':[1,0],'⬅️':[0,-1],'➡️':[0,1]},Z=Math.max(40,Math.min((st.clientWidth-28)/5,(st.clientHeight-200)/5)|0),T=[];
+ let li=0,prog=[],tries=0,run=0;
+ st.innerHTML=`<div class="rb"><div class="msg"></div><div class="grid" style="grid-template-columns:repeat(5,${Z}px)"></div><div class="prog"></div><div class="keys"></div></div>`;
+ const q=s=>st.querySelector(s),grid=q('.grid'),msg=q('.msg'),pr=q('.prog'),at=(l,p)=>l.some(k=>k[0]==p[0]&&k[1]==p[1]);
+ function draw(p){grid.innerHTML='';const l=L[li];for(let r=0;r<5;r++)for(let c=0;c<5;c++){const d=document.createElement('div');d.style.cssText=`width:${Z}px;height:${Z}px;font-size:${Z*.6}px`;
+  d.textContent=at(l.r,[r,c])?'🪨':(p[0]==r&&p[1]==c)?'🐢':(l.g[0]==r&&l.g[1]==c)?'🍎':'';grid.appendChild(d)}
+  pr.textContent=prog.length?prog.join(' '):'Dein Programm ist noch leer';sc(`Level ${li+1}/3 · ${prog.length}/16`)}
+ function reset(m){run=0;msg.textContent=m;draw(L[li].s)}
+ function next(){li++;if(li>=3)return end('Programmiert! 🤖',`Alle 3 Level geschafft – mit ${tries} Programmläufen.`);prog=[];reset(`Level ${li+1}: Bringe die 🐢 zum 🍎!`)}
+ function go(){if(run||!prog.length)return;run=1;tries++;let p=[...L[li].s],i=0;
+  const step=()=>{
+   if(i>=prog.length)return reset('Das Ziel wurde nicht erreicht. Ändere dein Programm!');
+   const d=D[prog[i++]],n=[p[0]+d[0],p[1]+d[1]];
+   if(n[0]<0||n[0]>4||n[1]<0||n[1]>4||at(L[li].r,n)){msg.textContent=`Bug in Schritt ${i}! Da kommt die 🐢 nicht weiter. Finde den Fehler.`;T.push(setTimeout(()=>reset(msg.textContent),900));return}
+   p=n;draw(p);if(p[0]==L[li].g[0]&&p[1]==L[li].g[1]){msg.textContent='Geschafft! 🍎';T.push(setTimeout(next,900));return}
+   T.push(setTimeout(step,350))};step()}
+ const K=q('.keys');K.innerHTML=Object.keys(D).map(k=>`<button>${k}</button>`).join('')+'<button data-x="d">⌫</button><button class="go" data-x="g">▶</button>';
+ K.onclick=e=>{const b=e.target.closest('button');if(!b||run)return;const x=b.dataset.x;if(x=='g')go();else if(x=='d')prog.pop();else if(prog.length<16)prog.push(b.textContent);draw(L[li].s)};
+ reset('Level 1: Bringe die 🐢 zum 🍎! Baue ein Programm aus Pfeilen und drücke ▶.');
+ return()=>T.forEach(clearTimeout);
+}
+/* ===== Spiel 3: Binär-Lampen (Zahlen wie ein Computer) ===== */
+function binary(st,end){
+ const N=[...Array(15).keys()].map(i=>i+1).sort(()=>Math.random()-.5).slice(0,6),V=[8,4,2,1],T=[];let r=0,err=0,on=[0,0,0,0],lock=0;
+ st.innerHTML='<div class="bn"><p class="tx"></p><div class="big"></div><div class="lamps"></div><p class="sum"></p><button class="btn">Prüfen ✔</button></div>';
+ const q=s=>st.querySelector(s),sum=()=>V.reduce((a,v,i)=>a+on[i]*v,0);
+ function draw(){q('.big').textContent=N[r];sc(`Runde ${r+1}/6`);
+  q('.lamps').innerHTML=V.map((v,i)=>`<button data-i="${i}" class="${on[i]?'on':''}"><span>${on[i]?'💡':'⚫'}</span><b>${v}</b></button>`).join('');
+  q('.sum').textContent=r<2?`Summe: ${sum()} · Binär: ${on.join('')}`:`Binär: ${on.join('')}`}
+ q('.lamps').onclick=e=>{const b=e.target.closest('button');if(!b||lock)return;on[b.dataset.i]^=1;draw()};
+ q('.btn').onclick=()=>{if(lock)return;
+  if(sum()==N[r]){lock=1;q('.tx').textContent=`Richtig! ${N[r]} = ${V.filter((v,i)=>on[i]).join(' + ')} – binär: ${on.join('')}`;
+   T.push(setTimeout(()=>{r++;if(r>=6)return end('Binär-Profi! 💡',`Alle 6 Zahlen – mit ${err} Fehlversuchen. So zählen Computer nur mit 0 und 1.`);on=[0,0,0,0];lock=0;q('.tx').textContent='Stelle die große Zahl mit den Lampen ein.';draw()},2200))}
+  else{err++;q('.tx').textContent='Noch nicht ganz. Rechne die leuchtenden Lampen zusammen!'}};
+ q('.tx').textContent='Jede Lampe ist eine Zahl wert. Leuchtende Lampen werden addiert. Stelle die große Zahl ein!';draw();
+ return()=>T.forEach(clearTimeout);
+}
+/* ===== Spiel: Wenn-Dann-Zoo (Bedingungen, Reihenfolge von Regeln) ===== */
+function ifthen(st,end){
+ const A=[['🦅','Adler',1,0],['🦉','Eule',1,0],['🦜','Papagei',1,0],['🐟','Fisch',0,1],['🐙','Krake',0,1],['🐬','Delfin',0,1],['🐧','Pinguin',0,1],['🐕','Hund',0,0],['🐄','Kuh',0,0],['🐘','Elefant',0,0],['🐇','Hase',0,0]],D=[['🦆','Ente',1,1],['🦢','Schwan',1,1]];
+ const LV=[
+  {r:['<b>WENN</b> das Tier fliegt, <b>DANN</b> 🌳','<b>SONST</b> 🏞️'],f:a=>a[2]?'🌳':'🏞️'},
+  {r:['<b>WENN</b> das Tier schwimmt, <b>DANN</b> 🌊','<b>SONST WENN</b> es fliegt, <b>DANN</b> 🌳','<b>SONST</b> 🏞️'],f:a=>a[3]?'🌊':a[2]?'🌳':'🏞️'},
+  {r:['<b>WENN</b> das Tier <b>NICHT</b> fliegt <b>UND</b> schwimmt, <b>DANN</b> 🌊','<b>SONST WENN</b> es fliegt, <b>DANN</b> 🌳','<b>SONST</b> 🏞️'],f:a=>!a[2]&&a[3]?'🌊':a[2]?'🌳':'🏞️'}];
+ let li=0,qi=0,err=0,Q=[];
+ st.innerHTML='<div class="rb"><div class="rules"></div><div class="ani"></div><div class="msg"></div><div class="bins"><button data-b="🌳">🌳<small>Baum</small></button><button data-b="🌊">🌊<small>Wasser</small></button><button data-b="🏞️">🏞️<small>Wiese</small></button></div></div>';
+ const q=s=>st.querySelector(s),msg=q('.msg');
+ const mk=()=>{Q=[pick(D),...[...A].sort(()=>Math.random()-.5).slice(0,3)].sort(()=>Math.random()-.5);qi=0};
+ function draw(){sc(`Level ${li+1}/3 · ${qi+1}/4`);q('.rules').innerHTML=LV[li].r.join('<br>');q('.ani').textContent=Q[qi][0]}
+ q('.bins').onclick=e=>{const b=e.target.closest('button');if(!b)return;const a=Q[qi];
+  if(b.dataset.b===LV[li].f(a)){qi++;msg.textContent='Richtig! ✔';
+   if(qi>=4){li++;if(li>=3)return end('Regel-Profi! 🧠',`Alle 12 Tiere sortiert – mit ${err} Fehlern. Solche WENN-DANN-Regeln steuern jedes Programm.`);mk();msg.textContent='Neue Regeln! Lies sie von oben nach unten.'}}
+  else{err++;msg.textContent=`Nicht ganz. ${a[1]}: fliegt ${a[2]?'ja':'nein'}, schwimmt ${a[3]?'ja':'nein'}. Die erste passende Regel gilt!`}
+  draw()};
+ mk();msg.textContent='Sortiere jedes Tier mit den Regeln. Die erste passende Regel gewinnt!';draw();
+}
+/* ===== Spiel 4: Tier-Memory (Bild + englisches Wort) ===== */
+function memory(st,end){
+ const P=[['🐶','dog'],['🐱','cat'],['🦊','fox'],['🐸','frog'],['🦁','lion'],['🐧','penguin']];
+ const cards=P.flatMap(([e,w],i)=>[{i,t:e,e:1},{i,t:w}]).sort(()=>Math.random()-.5);
+ st.innerHTML='<div class="mem"></div>';const g=st.firstChild;let open=[],moves=0,found=0,lock=0;sc('0 Züge');
+ cards.forEach(c=>{const d=document.createElement('button');d.className='mc';
+  d.innerHTML=`<div class="fr">?</div><div class="bk${c.e?' big':''}">${c.t}</div>`;
+  d.onclick=()=>{if(lock||d.classList.contains('on'))return;d.classList.add('on');open.push([c,d]);
+   if(open.length==2){moves++;sc(moves+' Züge');const[[a,p],[b,q]]=open;open=[];
+    if(a.i===b.i){found++;p.classList.add('ok');q.classList.add('ok');if(found==6)setTimeout(()=>end('Super gemerkt! 🧠',`Alle Paare in ${moves} Zügen gefunden.`),700)}
+    else{lock=1;setTimeout(()=>{p.classList.remove('on');q.classList.remove('on');lock=0},900)}}};
+  g.appendChild(d)});
+}
+/* ===== Spiel 6: Word-Match (englische Vokabeln auf Zeit) ===== */
+function pairs(st,end){
+ const V=[['🔴','red'],['🔵','blue'],['🟢','green'],['🟡','yellow'],['🟠','orange'],['🟣','purple'],['⚫','black'],['⚪','white'],['🟤','brown'],
+ ['🐶','dog'],['🐱','cat'],['🐴','horse'],['🐄','cow'],['🐷','pig'],['🐑','sheep'],['🐰','rabbit'],['🐘','elephant'],['🐵','monkey'],['🐸','frog'],
+ ['📖','book'],['✏️','pencil'],['🪑','chair'],['🚪','door'],['🔑','key'],['⚽','ball'],['🎒','backpack'],['✂️','scissors'],['⏰','clock'],['🛏️','bed'],
+ ['☀️','sun'],['🌧️','rain'],['☁️','cloud'],['❄️','snow'],['⛈️','storm'],['🌈','rainbow'],['💨','wind'],['🌫️','fog'],
+ ['👕','T-shirt'],['👖','jeans'],['👗','dress'],['🧦','socks'],['🧢','cap'],['🧥','jacket'],['👟','shoes'],['🧤','gloves'],['🧣','scarf'],
+ ['👁️','eye'],['👂','ear'],['👃','nose'],['👄','mouth'],['🦷','tooth'],['✋','hand'],['🦶','foot'],['🦵','leg'],['💪','arm'],['🧠','brain'],
+ ['<svg viewBox="0 0 40 40" width="40" height="40"><circle cx="20" cy="7" r="5" fill="#f5c39b"/><rect x="11" y="13" width="18" height="22" rx="7" fill="#9ec9ff"/><circle cx="20" cy="26" r="6" fill="#ff7a7a"/></svg>','belly'],['🦜','parrot'],['🖊️','pen'],
+ ['<svg viewBox="0 0 40 40" width="40" height="40"><path d="M12 4H22V23L33 27Q36 28 36 32V36H12Z" fill="#ffc933" stroke="#c99500" stroke-width="2" stroke-linejoin="round"/></svg>','gumboots'],
+ ['🥕','carrot'],['🍅','tomato'],['🥔','potato'],['🌽','corn'],['🥦','broccoli'],['🧅','onion'],['🧄','garlic'],['🥒','cucumber'],['🥬','lettuce'],['🫑','pepper'],
+ ['🍎','apple'],['🍌','banana'],['🍓','strawberry'],['🍇','grapes'],['🍋','lemon'],['🍐','pear'],['🍒','cherry'],['🍉','watermelon'],['🍍','pineapple'],['🍑','peach'],['🥝','kiwi'],
+ ['👩','mum'],['👨','dad'],['👧','sister'],['👦','brother'],['👵','grandma'],['👴','grandpa'],['👶','baby'],['👨‍👩‍👧‍👦','family'],
+ ['<svg viewBox="0 0 40 40" width="40" height="40"><circle cx="20" cy="10" r="9" fill="#7a4a2b"/><circle cx="20" cy="11" r="6" fill="#f5c39b"/><path d="M12 37L16 19H24L28 37Z" fill="#ff7fb0"/><circle cx="17.5" cy="11" r="2" fill="none" stroke="#333"/><circle cx="22.5" cy="11" r="2" fill="none" stroke="#333"/></svg>','aunt'],
+ ['<svg viewBox="0 0 40 40" width="40" height="40"><rect x="13" y="2" width="14" height="5" rx="2" fill="#3a6fd8"/><circle cx="20" cy="11" r="6" fill="#f5c39b"/><path d="M16 13.5Q20 11 24 13.5Q20 16 16 13.5Z" fill="#5a3a22"/><rect x="12" y="19" width="16" height="18" rx="4" fill="#4caf6a"/></svg>','uncle'],
+ ['📏','ruler'],['📓','notebook'],['🖍️','crayon'],['📎','paperclip'],
+ ['<svg viewBox="0 0 40 40" width="40" height="40"><rect x="5" y="14" width="30" height="14" rx="3" fill="#ff9bb3"/><rect x="5" y="14" width="12" height="14" rx="3" fill="#7fb7ff"/></svg>','eraser'],
+ ['<svg viewBox="0 0 40 40" width="40" height="40"><rect x="14" y="4" width="12" height="9" rx="2" fill="#f2f2f2" stroke="#999"/><rect x="11" y="13" width="18" height="24" rx="3" fill="#ff8c3a"/><rect x="14" y="19" width="12" height="8" fill="#fff"/></svg>','glue'],
+ ['<svg viewBox="0 0 40 40" width="40" height="40"><rect x="3" y="12" width="34" height="18" rx="8" fill="#6bd18a"/><path d="M3 21H37" stroke="#2f9e5a" stroke-width="2"/><circle cx="30" cy="21" r="2.5" fill="#fff"/></svg>','pencil case']],T=[];
+ const sh=a=>[...a].sort(()=>Math.random()-.5),ids=sh(V.map((_,i)=>i)).slice(0,5);
+ let L=sh(ids),W=sh(ids),n=0,sel=null,lock=0,dead=Date.now()+60000;
+ st.innerHTML='<div class="pr"><div class="col" id="pl"></div><div class="col" id="pw"></div></div>';
+ const pl=st.querySelector('#pl'),pw=st.querySelector('#pw');
+ const draw=()=>{pl.innerHTML=L.map((k,i)=>`<button data-i="${i}" class="${sel&&sel.c=='pl'&&sel.i==i?'s':''}">${V[k][0]}</button>`).join('');
+  pw.innerHTML=W.map((k,i)=>`<button data-i="${i}" class="${sel&&sel.c=='pw'&&sel.i==i?'s':''}">${V[k][1]}</button>`).join('')};
+ st.querySelector('.pr').onclick=e=>{const b=e.target.closest('button');if(!b||lock)return;const c=b.parentNode.id,i=+b.dataset.i;
+  if(!sel||sel.c==c){sel={c,i};return draw()}
+  const p=c=='pl'?i:sel.i,w=c=='pw'?i:sel.i,bp=pl.children[p],bw=pw.children[w];sel=null;lock=1;
+  if(L[p]===W[w]){n++;bp.className=bw.className='ok';
+   T.push(setTimeout(()=>{const free=V.map((_,j)=>j).filter(j=>!L.includes(j)),k=pick(free);L[p]=W[w]=k;lock=0;draw()},300))}
+  else{dead-=2000;bp.className=bw.className='bad';T.push(setTimeout(()=>{lock=0;draw()},350))}};
+ draw();
+ const iv=setInterval(()=>{const s=Math.ceil((dead-Date.now())/1000);sc(`⏱ ${Math.max(s,0)} · ⭐ ${n}`);
+  if(s<=0){const best=store.get('mg_best_pairs',0);if(n>best)store.set('mg_best_pairs',n);
+   end('Zeit um! ⏱',`${n} Paare gefunden. `+(n>best?'Neuer Rekord! 🏆':`Dein Rekord: ${best}`))}},200);
+ return()=>{clearInterval(iv);T.forEach(clearTimeout)};
+}
+</script></body></html>

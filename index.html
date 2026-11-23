@@ -971,13 +971,14 @@ if(!S.v){SEED2.split(";").forEach((p,i)=>{const[e,d,u]=p.split("=");if(!S.words.
 if(S.v<3){SEED3.split(";").forEach((p,i)=>{const[e,d]=p.split("=");const x=S.words.find(w=>w.en.toLowerCase()==e.toLowerCase());if(x){x.unit="Unit 1";x.de=d}else S.words.push({id:2000+i,en:e,de:d,unit:"Unit 1",box:0,ok:0,bad:0})});S.v=3;save()}
 if(!S.sel)S.sel=["Unit 1"];
 S.set=Object.assign({mode:"auto",color:"blau",voice:"",rate:0.9,auto:false},S.set||{});S.err=S.err||[];
+if(!S.pv){S.pts=Math.round((S.pts||0)/10);S.pv=2}S.sp=S.sp||0;
 if(S.v<4){SEED4.split(";").forEach((p,i)=>{const[e,d,u]=p.split("=");const x=S.words.find(w=>w.en.toLowerCase()==e.toLowerCase());if(!x)S.words.push({id:3000+i,en:e,de:d,unit:u||"Unit 2",box:0,ok:0,bad:0});else if(!/^Unit \d$/.test(x.unit)){x.unit=u||"Unit 2";x.de=d}});S.v=4;save()}
 if(S.v<5){SEED5.split(";").forEach((p,i)=>{const[e,d]=p.split("=");if(!S.words.some(w=>w.en.toLowerCase()==e.toLowerCase()))S.words.push({id:4000+i,en:e,de:d,unit:"Unit 2",box:0,ok:0,bad:0})});const en=S.words.find(w=>w.en=="end");if(en&&!/enden/.test(en.de))en.de+="/enden/beenden";S.v=5;save()}
 if(S.v<6){SEED6.split(";").forEach((p,i)=>{const[e,d]=p.split("=");const x=S.words.find(w=>w.en.toLowerCase()==e.toLowerCase());if(!x)S.words.push({id:5000+i,en:e,de:d,unit:"Unit 3",box:0,ok:0,bad:0});else if(!/^Unit \d$/.test(x.unit)){x.unit="Unit 3";x.de=d}});[["cook","kochen/zubereiten"],["line","die Linie"],["mean","bedeuten"],["time","das Mal"],["remember","an etwas denken"],["after","nachdem"]].forEach(([e,d])=>{const x=S.words.find(w=>w.en==e);if(x&&!x.de.includes(d))x.de+="/"+d});S.v=6;save()}
 if(S.v<7){SEED7.split(";").forEach((p,i)=>{const[e,d,u]=p.split("=");const x=S.words.find(w=>w.en.toLowerCase()==e.toLowerCase());if(!x)S.words.push({id:6000+i,en:e,de:d,unit:u||"Unit 4",box:0,ok:0,bad:0});else if(!/^Unit \d$/.test(x.unit)){x.unit=u||"Unit 4";x.de=d}});[["clean","putzen/säubern/reinigen"],["break","zerbrechen/kaputt machen"],["order","der Befehl"],["if","ob"],["tear","reißen"]].forEach(([e,d])=>{const x=S.words.find(w=>w.en==e);if(x&&!x.de.includes(d))x.de+="/"+d});S.v=7;save()}
 if(S.v<8){SEED8.split(";").forEach((p,i)=>{const[e,d,u]=p.split("=");if(!S.words.some(w=>w.en.toLowerCase()==e.toLowerCase()))S.words.push({id:7000+i,en:e,de:d,unit:u,box:0,ok:0,bad:0})});S.v=8;save()}
 function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
-function rec(k,good){S.st[k]=S.st[k]||[0,0];S.st[k][good?0:1]++;if(good)S.pts+=10;save()}
+function rec(k,good){S.st[k]=S.st[k]||[0,0];S.st[k][good?0:1]++;if(good)S.pts+=1;save()}
 const norm=t=>String(t).toLowerCase().replace(/’/g,"'").replace(/[.!?,]/g,"").replace(/\s+/g," ").trim();
 const units=()=>[...new Set(S.words.map(w=>w.unit))];
 const U=["Unit 1","Unit 2","Unit 3","Unit 4"];
@@ -1083,8 +1084,8 @@ const WOU=()=>WO.filter(x=>uOK(x[2]||"Unit 1",x[1][0]));
 const NAV=[["home","Start"],["vokabeln","Vokabeln"],["grammatik","Grammatik"],["uebungen","Übungen"],["hoeren","Hören"],["uhrzeit","Uhrzeit"],["test","Test"],["fortschritt","Fortschritt"],["fehler","Fehler"],["einstellungen","Einstellungen"]];
 function render(){
   const v=location.hash.slice(1)||"home";
-  $("#nav").innerHTML=NAV.map(n=>`<a href="#${n[0]}" class="${n[0]==v?"on":""}">${n[1]}</a>`).join("");
-  const f={home,vokabeln,grammatik,uebungen,uhrzeit,test,fortschritt,einstellungen,woerter,sicherung,hoeren,fehler,quiz}[v]||home;
+  $("#nav").innerHTML=NAV.map(n=>`<a href="#${n[0]}" class="${(n[0]==v||(n[0]=="fortschritt"&&v=="einloesen"))?"on":""}">${n[1]}</a>`).join("");
+  const f={home,vokabeln,grammatik,uebungen,uhrzeit,test,fortschritt,einstellungen,woerter,sicherung,hoeren,fehler,einloesen,quiz}[v]||home;
   $("#app").innerHTML=f();
   const a=$("#ans")||$("#qa");if(a&&(a.id=="qa"||!V.res))a.focus();
 }
@@ -1120,7 +1121,7 @@ function tg(u){S.sel=S.sel.includes(u)?S.sel.filter(x=>x!=u):[...S.sel,u];if(!S.
 function home(){
   const h=new Date().getHours(),g=h<11?"Guten Morgen":h<18?"Hallo":"Guten Abend";
   const hard=S.words.filter(w=>w.bad>w.ok).length;
-  return `<div style="display:flex;align-items:center;gap:12px"><span class="logo">${LOGO}</span><h1 style="margin:0">${g} Mia! 👋</h1></div><p class="mu">Access 1 · Klasse 5 · <b>${S.pts}</b> Punkte · ${WP().length} Wörter${hard?` · ${hard} schwierige`:""}</p>
+  return `<div style="display:flex;align-items:center;gap:12px"><span class="logo">${LOGO}</span><h1 style="margin:0">${g} Mia! 👋</h1></div><p class="mu">Access 1 · Klasse 5 · <b>${getPts()}</b> ⭐ · ${WP().length} Wörter${hard?` · ${hard} schwierige`:""}</p>
   ${unitBox()}<div class="grid"><a class="tile" href="#vokabeln"><span>📚</span>Vokabeln</a><a class="tile" href="#grammatik"><span>✏️</span>Grammatik</a><a class="tile" href="#uebungen"><span>📝</span>Übungen</a><a class="tile" href="#uhrzeit"><span>🕒</span>Uhrzeit</a><a class="tile" href="#hoeren"><span>🎧</span>Hören</a><a class="tile" href="#fehler"><span>🔁</span>Meine Fehler</a><a class="tile" href="#test"><span>🏆</span>Test</a><a class="tile" href="#fortschritt"><span>📈</span>Fortschritt</a></div><p id="tt" class="mu" style="text-align:center;margin-top:24px">${ttxt()}</p><p class="mu" style="text-align:center;font-size:13px;margin-top:12px">Version 0.2611<br>Copyright by Patrick Uhle</p>`;
 }
 
@@ -1248,7 +1249,7 @@ function uhrzeit(){
 function fortschritt(){
   const rows=Object.entries(S.st).sort();
   const hard=S.words.filter(w=>w.bad>w.ok).sort((a,b)=>(b.bad-b.ok)-(a.bad-a.ok)).slice(0,10);
-  let h=`<h1>Fortschritt</h1><div class="card"><div class="big">${S.pts} Punkte</div></div><h2>Pro Unit / Thema</h2>`;
+  let h=`<h1>Fortschritt</h1>${subNav("fortschritt")}<div class="card"><div class="big">⭐ ${getPts()} Punkte verfügbar</div><p class="mu">Insgesamt gesammelt: ${S.pts} · Eingelöst: ${S.sp||0}</p><a class="btn p" href="#einloesen">🎮 Punkte einlösen</a></div><h2>Pro Unit / Thema</h2>`;
   if(!rows.length)h+=`<p class="mu">Noch nichts geübt – los geht’s!</p>`;
   rows.forEach(([k,[o,b]])=>{const p=Math.round(o/(o+b)*100);h+=`<div class="card"><div class="row" style="border:0"><b>${esc(k.slice(2))}</b><span>${o} richtig · ${b} falsch</span></div><div class="bar"><i style="width:${p}%"></i></div></div>`});
   h+=`<h2>Schwierige Wörter</h2>`;
@@ -1368,6 +1369,15 @@ function hoeren(){
   <h2>Hören und schreiben</h2><button class="p" onclick="hrGo('dw',10)">Wörter (10)</button><button class="p" onclick="hrGo('ds',8)">Sätze (8)</button>
   <h2>Hören und auswählen</h2><button class="p" onclick="hrGo('mc',10)">10 Fragen</button><button class="p" onclick="hrGo('mc',20)">20 Fragen</button>
   <h2>Stimme testen</h2><button onclick="say('Hello Mia! Let us practise English.')">🔊 Probe</button>`;
+}
+const GCOST=35;
+function getPts(){return Math.max(0,(S.pts||0)-(S.sp||0))}
+function spendPts(n){S.sp=Math.max(0,(S.sp||0)+n);save()}
+function leaveGames(){location.hash="#home"}
+function subNav(a){return `<div style="margin:6px 0 12px"><a class="btn ${a=="fortschritt"?"p":""}" href="#fortschritt">Übersicht</a><a class="btn ${a=="einloesen"?"p":""}" href="#einloesen">🎮 Punkte einlösen</a></div>`}
+function einloesen(){
+  const p=getPts(),n=Math.floor(p/GCOST);
+  return `<h1>Fortschritt</h1>${subNav("einloesen")}<div class="card"><b>🎮 Punkte einlösen</b><p class="mu">Ein Minispiel kostet ${GCOST} ⭐. Du hast <b>${p} ⭐</b>${n?` und kannst ${n} Spiel${n>1?"e":""} spielen.`:`. Dir fehlen noch ${GCOST-p} ⭐, sammle sie mit Aufgaben.`}</p></div><iframe id="mg" src="spiele.html" title="Minispiele" style="width:100%;height:82vh;min-height:540px;border:0;border-radius:14px;background:var(--card)"></iframe>`;
 }
 let LA=Date.now(),TS=0;
 ["click","keydown","touchstart","scroll","mousemove"].forEach(e=>addEventListener(e,()=>{LA=Date.now()},{passive:true}));
