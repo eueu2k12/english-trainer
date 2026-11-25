@@ -37,7 +37,6 @@ h1{font-size:22px;margin:0}
 .box h2{margin:0 0 6px}.box p{margin:4px 0;color:var(--mut)}
 #toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:14px;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90%;text-align:center;z-index:9}
 .pz{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:14px;text-align:center}
-.pz img{width:48px;height:48px;border-radius:8px;vertical-align:middle;margin-left:8px}
 .board{position:relative;background:#0002;border-radius:12px;overflow:hidden}
 .tile{position:absolute;left:0;top:0;transition:transform .15s;box-shadow:inset 0 0 0 2px #fff9}
 .mem{height:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;align-content:center}
@@ -139,13 +138,13 @@ window.MiniGames={config:CFG,refresh:menu};
 menu();
 /* ===== Spiel 1: Tierpuzzle (Schiebepuzzle 3x3) ===== */
 function puzzle(st,end){
- const E=pick(['🦊','🐼','🦁','🐸','🐯','🐨','🐙','🦄']),c=document.createElement('canvas');c.width=c.height=300;
- const x=c.getContext('2d'),gr=x.createLinearGradient(0,0,300,300);gr.addColorStop(0,'#bfe6ff');gr.addColorStop(1,'#d8f5c4');
- x.fillStyle=gr;x.fillRect(0,0,300,300);x.font='200px serif';x.textAlign='center';x.textBaseline='middle';x.fillText(E,150,165);
- const url=c.toDataURL(),S=Math.min(st.clientWidth-24,st.clientHeight-110),T=S/3;
- st.innerHTML=`<div class="pz"><div>Schiebe die Teile, bis das Tier komplett ist.<img src="${url}" alt=""></div><div class="board" style="width:${S}px;height:${S}px"></div></div>`;
+ const E=pick(['🦊','🐼','🦁','🐸','🐯','🐨','🐙','🦄']),S=Math.max(150,Math.min(st.clientWidth-24,st.clientHeight-110)),T=S/3;
+ const GR='linear-gradient(135deg,#bfe6ff,#d8f5c4)',EF="'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
+ st.innerHTML=`<div class="pz"><div>Schiebe die Teile, bis das Tier komplett ist. <span style="font-size:36px;vertical-align:middle;margin-left:8px;font-family:${EF}">${E}</span></div><div class="board" style="width:${S}px;height:${S}px"></div></div>`;
  const b=st.querySelector('.board'),slot=[0,1,2,3,4,5,6,7,8],tiles=[];let moves=0,done=0;
- for(let t=0;t<8;t++){const d=document.createElement('div');d.className='tile';d.style.cssText=`width:${T}px;height:${T}px;background:url(${url});background-size:${S}px ${S}px;background-position:-${t%3*T}px -${(t/3|0)*T}px`;d.onclick=()=>tap(t);b.appendChild(d);tiles[t]=d}
+ for(let t=0;t<8;t++){const d=document.createElement('div');d.className='tile';d.style.cssText=`width:${T}px;height:${T}px;overflow:hidden;background:${GR};background-size:${S}px ${S}px;background-position:-${t%3*T}px -${(t/3|0)*T}px`;
+  const g=document.createElement('div');g.textContent=E;g.style.cssText=`position:absolute;left:-${t%3*T}px;top:-${(t/3|0)*T}px;width:${S}px;height:${S}px;display:flex;align-items:center;justify-content:center;font-size:${S*.62}px;line-height:1;font-family:${EF};pointer-events:none`;
+  d.appendChild(g);d.onclick=()=>tap(t);b.appendChild(d);tiles[t]=d}
  const place=()=>slot.forEach((t,i)=>{if(t<8)tiles[t].style.transform=`translate(${i%3*T}px,${(i/3|0)*T}px)`});
  const adj=(i,j)=>Math.abs(i%3-j%3)+Math.abs((i/3|0)-(j/3|0))===1;
  function tap(t){if(done)return;const i=slot.indexOf(t),e=slot.indexOf(8);if(!adj(i,e))return;slot[e]=t;slot[i]=8;moves++;sc(moves+' Züge');place();

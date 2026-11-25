@@ -995,7 +995,7 @@ const PGM={};
   add(SEED7,"Unit 4",[["I don't think so.",256],["out and about",256],["pavement",257],["description",258],["jewel",259],["crazy",260],["honestly",261]]);
 })();
 const PGL={};Object.values(PGM).forEach(a=>{(PGL[a[0]]=PGL[a[0]]||new Set()).add(a[1])});
-const wsel=w=>{const u=U.includes(w.unit)?w.unit:"Weitere";if(!S.sel.includes(u))return false;if(u=="Weitere")return true;const a=(S.pg&&S.pg[u])||["Alle"];if(a.includes("Alle"))return true;const m=PGM[w.en.toLowerCase()];return !!m&&m[0]==u&&a.includes(m[1])};
+const wsel=w=>{const u=U.includes(w.unit)?w.unit:"Weitere";if(!S.sel.includes(u))return false;if(u=="Weitere")return true;const a=(S.pg&&S.pg[u])||["Alle"];if(a.includes("Alle"))return true;const m=PGM[(w.o||w.en).toLowerCase()];return !!m&&m[0]==u&&a.includes(m[1])};
 const STOP=new Set("a an the is are am i you he she it we they my your his her our their to in on at of and but or do does don't doesn't not no can can't have has with for from this that these those there what who where when why how please yes me him us them its as so very".split(" "));
 function pgOK(u,txt){
   const a=(S.pg&&S.pg[u])||["Alle"];if(a.includes("Alle"))return true;
@@ -1122,7 +1122,7 @@ function home(){
   const h=new Date().getHours(),g=h<11?"Guten Morgen":h<18?"Hallo":"Guten Abend";
   const hard=S.words.filter(w=>w.bad>w.ok).length;
   return `<div style="display:flex;align-items:center;gap:12px"><span class="logo">${LOGO}</span><h1 style="margin:0">${g} Mia! 👋</h1></div><p class="mu">Access 1 · Klasse 5 · <b>${getPts()}</b> ⭐ · ${WP().length} Wörter${hard?` · ${hard} schwierige`:""}</p>
-  ${unitBox()}<div class="grid"><a class="tile" href="#vokabeln"><span>📚</span>Vokabeln</a><a class="tile" href="#grammatik"><span>✏️</span>Grammatik</a><a class="tile" href="#uebungen"><span>📝</span>Übungen</a><a class="tile" href="#uhrzeit"><span>🕒</span>Uhrzeit</a><a class="tile" href="#hoeren"><span>🎧</span>Hören</a><a class="tile" href="#fehler"><span>🔁</span>Meine Fehler</a><a class="tile" href="#test"><span>🏆</span>Test</a><a class="tile" href="#fortschritt"><span>📈</span>Fortschritt</a></div><p id="tt" class="mu" style="text-align:center;margin-top:24px">${ttxt()}</p><p class="mu" style="text-align:center;font-size:13px;margin-top:12px">Version 0.2611<br>Copyright by Patrick Uhle</p>`;
+  ${unitBox()}<div class="grid"><a class="tile" href="#vokabeln"><span>📚</span>Vokabeln</a><a class="tile" href="#grammatik"><span>✏️</span>Grammatik</a><a class="tile" href="#uebungen"><span>📝</span>Übungen</a><a class="tile" href="#uhrzeit"><span>🕒</span>Uhrzeit</a><a class="tile" href="#hoeren"><span>🎧</span>Hören</a><a class="tile" href="#fehler"><span>🔁</span>Meine Fehler</a><a class="tile" href="#test"><span>🏆</span>Test</a><a class="tile" href="#fortschritt"><span>📈</span>Fortschritt</a></div><p id="tt" class="mu" style="text-align:center;margin-top:24px">${ttxt()}</p><p class="mu" style="text-align:center;font-size:13px;margin-top:12px">Version 0.2611.1<br>Copyright by Patrick Uhle</p>`;
 }
 
 /* Vokabeltrainer */
@@ -1261,8 +1261,17 @@ function fortschritt(){
 function woerter(){
   return `<h1>Wörter</h1><div class="card"><b>Neues Wort</b><input id="ne" placeholder="Englisch" autocapitalize="off"><input id="nd" placeholder="Deutsch (Alternativen mit /)"><input id="nu" placeholder="Unit, z. B. Unit 1" value="Unit 1"><button class="p" onclick="addW()">Hinzufügen</button></div>
   <div class="card"><b>Viele Wörter auf einmal</b><p class="mu">Eine Zeile pro Wort: englisch = deutsch. Tipp: Auf dem iPad lässt sich Text aus einem Foto der Buchseite kopieren (Live Text) und hier einfügen.</p><textarea id="bulk" placeholder="cat = Katze&#10;dog = Hund"></textarea><input id="bu" placeholder="Unit" value="Unit 1"><button class="p" onclick="bulkW()">Importieren</button></div>
-  <h2>Alle Wörter (${S.words.length})</h2>`+S.words.map(w=>`<div class="row"><span>${esc(w.en)} – ${esc(w.de)} <span class="mu">· ${esc(w.unit)}</span></span><button onclick="delW(${w.id})" aria-label="Löschen">🗑</button></div>`).join("");
+  <h2>Alle Wörter (${S.words.length})</h2><input id="wq" type="search" placeholder="🔍 Wort suchen (englisch oder deutsch)" autocapitalize="off" autocorrect="off" oninput="wFilter()" value="${esc(V.q||"")}"><div id="wlist">${wRows()}</div>`;
 }
+function wRows(){
+  const q=(V.q||"").trim().toLowerCase(),L=S.words.filter(w=>!q||w.en.toLowerCase().includes(q)||w.de.toLowerCase().includes(q));
+  return (q?`<p class="mu">${L.length} Treffer</p>`:"")+L.map(w=>V.ed==w.id?`<div class="card"><b>Wort bearbeiten</b><input id="wen" value="${esc(w.en)}" autocapitalize="off" placeholder="Englisch"><input id="wde" value="${esc(w.de)}" placeholder="Deutsch (Alternativen mit /)"><input id="wun" value="${esc(w.unit)}" placeholder="Unit"><button class="p" onclick="saveW(${w.id})">Speichern</button><button onclick="editW(null)">Abbrechen</button></div>`:`<div class="row"><span>${esc(w.en)} – ${esc(w.de)} <span class="mu">· ${esc(w.unit)}</span></span><span><button onclick="editW(${w.id})" aria-label="Bearbeiten">✏️</button><button onclick="delW(${w.id})" aria-label="Löschen">🗑</button></span></div>`).join("")||`<p class="mu">Kein Wort gefunden.</p>`;
+}
+function wFilter(){V.q=$("#wq").value;V.ed=null;$("#wlist").innerHTML=wRows()}
+function editW(id){V.ed=id;$("#wlist").innerHTML=wRows()}
+function saveW(id){const w=S.words.find(x=>x.id==id);if(!w)return;const e=$("#wen").value.trim(),d=$("#wde").value.trim(),u=$("#wun").value.trim();if(!e||!d)return;
+  if(!w.o&&w.en.toLowerCase()!=e.toLowerCase())w.o=w.en;
+  w.en=e;w.de=d;w.unit=u||w.unit;V.ed=null;V.w=null;save();$("#wlist").innerHTML=wRows()}
 function addW(){const e=$("#ne").value.trim(),d=$("#nd").value.trim();if(!e||!d)return;S.words.push({id:Date.now()+Math.random(),en:e,de:d,unit:$("#nu").value.trim()||"Eigene",box:0,ok:0,bad:0});save();render()}
 function bulkW(){const u=$("#bu").value.trim()||"Eigene";$("#bulk").value.split("\n").forEach(l=>{const p=l.split(/\s*[=\t;]\s*/);if(p.length>=2&&p[0]&&p[1])S.words.push({id:Date.now()+Math.random(),en:p[0].trim(),de:p[1].trim(),unit:u,box:0,ok:0,bad:0})});save();render()}
 function delW(id){S.words=S.words.filter(w=>w.id!=id);V.w=null;save();render()}
